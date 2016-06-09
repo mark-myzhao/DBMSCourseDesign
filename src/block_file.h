@@ -1,6 +1,9 @@
 #ifndef __BLOCK_FILE_H
 #define __BLOCK_FILE_H
 
+#include <cstdio>
+#include "def.h"
+
 // -----------------------------------------------------------------------------
 //  NOTE: The author of the implementation of class BlockFile is Yufei Tao.
 //  Modified by Qiang Huang
@@ -27,31 +30,31 @@ public:
 	~BlockFile();					// destructor
 
 	// -------------------------------------------------------------------------
-									// write <bytes> of length <num>
-	void put_bytes(char* bytes, int num)
+									
+	void put_bytes(char* bytes, int num) const // write <bytes> of length <num>
 	{ fwrite(bytes, num, 1, fp_); }
-									// read <bytes> of length <num>
-	void get_bytes(char* bytes, int num)
+									
+	void get_bytes(char* bytes, int num) const // read <bytes> of length <num>
 	{ fread(bytes, num, 1, fp_); }
 
-	void seek_block(int bnum) 		// move <fp_> to the right with <bnum>
+	void seek_block(int bnum) const		// move <fp_> to the right with <bnum>
 	{ fseek(fp_, (bnum - act_block_) * block_length_, SEEK_CUR); }
 
 	// -------------------------------------------------------------------------
-	bool file_new() 				// whether this block is modified?
+	bool file_new() const	// whether this block is modified?
 	{ return new_flag_; }
 
-	int get_blocklength()			// get block length
+	int get_blocklength() const	// get block length
 	{ return block_length_; }
 
-	int get_num_of_blocks()			// get number of blocks
+	int get_num_of_blocks() const	// get number of blocks
 	{ return num_blocks_; }
 
 	// -------------------------------------------------------------------------
 	void fwrite_number(				// write a value (type int)
-		int num);						// value to write
+		int num) const;						// value to write
 
-	int fread_number();				// read a value (type int)
+	int fread_number() const;				// read a value (type int)
 
 	// -------------------------------------------------------------------------
 	void read_header(				// fetches info in the first block

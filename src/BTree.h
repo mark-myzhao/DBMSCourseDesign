@@ -2,6 +2,7 @@
 #define _BTREE_H_
 #include "def.h"
 #include "BNode.h"
+#include "block_file.h"
 
 class BTree {
 public:

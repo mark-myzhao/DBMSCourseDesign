@@ -55,7 +55,7 @@ public:
 
     virtual BLeafNode* getLastSibling() const;  // get last sibling node
     virtual BLeafNode* getNextSibling() const;  // get next sibling node
-    int getInde() const;
+    int getIndex() const;
     /* data */
 private:
     int indexFromLItem_;  //  index

@@ -1,4 +1,4 @@
-##ifndef _LItem_H_
+#ifndef _LItem_H_
 #define _LItem_H_
 
 class LItem {
