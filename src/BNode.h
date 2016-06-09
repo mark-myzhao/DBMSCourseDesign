@@ -1,14 +1,15 @@
 #ifndef _BNODE_H_
 #define _BNODE_H_
 #include "def.h"
+#include "BTree.h"
 
 class BNode {
 public:
     BNode();
     ~BNode();
 
-    void writeToFile(char* fileName, POSPOINTER addr) const;
-    void restoreFrom(char* fileName, POSPOINTER addr);
+    virtual void writeToFile(POSPOINTER addr) const;
+    virtual void restoreFrom(BTree* btree, POSPOINTER addr);
 
     int getEntrySize() const;
                               //  There is a doubly linked lists between nodes each level.
@@ -24,12 +25,18 @@ protected:
     float* key_;       //  keys in this node
     POSPOINTER addr_;   //  position pointer of this node
     
+    POSPOINTER lastSibling_;
+    POSPOINTER nextSibling_;
 };
 
 class BIndexNode : public BNode {
 public:
     BIndexNode();
     ~BIndexNode();
+
+    virtual void writeToFile(POSPOINTER addr) const;
+    virtual void restoreFrom(BTree* btree, POSPOINTER addr);
+
 
     virtual BIndexNode* getLastSibling() const;  // get last sibling node
     virtual BIndexNode* getNextSibling() const;  // get next sibling node
@@ -42,6 +49,9 @@ class BLeafNode : public BNode {
 public:
     BLeafNode();
     ~BLeafNode();
+
+    virtual void writeToFile(POSPOINTER addr) const;
+    virtual void restoreFrom(BTree* btree, POSPOINTER addr);
 
     virtual BLeafNode* getLastSibling() const;  // get last sibling node
     virtual BLeafNode* getNextSibling() const;  // get next sibling node

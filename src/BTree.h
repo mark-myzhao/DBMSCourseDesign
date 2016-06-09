@@ -1,6 +1,7 @@
 #ifndef _BTREE_H_
 #define _BTREE_H_
 #include "def.h"
+#include "BNode.h"
 
 class BTree {
 public:
