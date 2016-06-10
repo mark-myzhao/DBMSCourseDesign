@@ -2,6 +2,7 @@
 #define _BNODE_H_
 #include "def.h"
 #include "BTree.h"
+#include "block_file.h"
 
 class BNode {
 public:
@@ -11,7 +12,9 @@ public:
     virtual void writeToFile(POSPOINTER addr) const;
     virtual void restoreFrom(BTree* btree, POSPOINTER addr);
 
-    int getEntrySize() const;
+    bool isDirty() const;
+    int getEntryNum() const;
+    int getAddr() const;
                               //  There is a doubly linked lists between nodes each level.
     virtual BNode* getLastSibling() const;  // get last sibling node
     virtual BNode* getNextSibling() const;  // get next sibling node

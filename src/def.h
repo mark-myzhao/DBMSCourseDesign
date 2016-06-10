@@ -50,7 +50,8 @@ const int   INDEX_SIZE_LEAF_NODE = 4096;
 const int   MAXK = 100;				// max top-k value
 
 const int BUFFERSIZE = 10000;    //  10KB
-
+const BLOKCLENGTH = 1000;        //  1KB
+const int NODESIZE = 40;         //  40 entries in one node
 // -----------------------------------------------------------------------------
 //  Funuctions
 // -----------------------------------------------------------------------------
