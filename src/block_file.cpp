@@ -35,7 +35,7 @@ BlockFile::BlockFile(				// constructor
 	//
 	//  "rb+": read or write data from or into binary doc. if the file not 
 	//  exist, it will return NULL.
-	//  ÓÃ¶ş½øÖÆ¸ñÊ½´ò¿ªÎÄ¼ş×¼±¸¶ÁĞ´
+	//  ç”¨äºŒè¿›åˆ¶æ ¼å¼æ‰“å¼€æ–‡ä»¶å‡†å¤‡è¯»å†™
 	// -------------------------------------------------------------------------
 	if ((fp_ = fopen(name, "rb+")) != nullptr) {
 		// ---------------------------------------------------------------------
@@ -55,8 +55,8 @@ BlockFile::BlockFile(				// constructor
 			// -----------------------------------------------------------------
 			//  Ensure <block_length_> is larger than or equal to 8 bytes.
 			//  8 bytes = 4 bypes <block_length_> + 4 bytes <num_blocks_>.
-			//  ÒâË¼ÊÇ£¬ÓÉÓÚheader²¿·Ö´¢´æÁË2¸öint£¬ËüÖÁÉÙÓĞ8 bytesµÄ´óĞ¡
-			//  block_length_±ÈÕâ»¹Ğ¡£¬ÊÇ²»ºÏÀíµÄ¡£
+			//  æ„æ€æ˜¯ï¼Œç”±äºheaderéƒ¨åˆ†å‚¨å­˜äº†2ä¸ªintï¼Œå®ƒè‡³å°‘æœ‰8 bytesçš„å¤§å°
+			//  block_length_æ¯”è¿™è¿˜å°ï¼Œæ˜¯ä¸åˆç†çš„ã€‚
 			// -----------------------------------------------------------------
 			error("BlockFile::BlockFile couldnot open file.\n", true);
 		}
@@ -82,8 +82,8 @@ BlockFile::BlockFile(				// constructor
 		// ---------------------------------------------------------------------
 		//  Since <block_length_> >= 8 bytes, for the remain bytes, we will 
 		//  init 0 to them.
-		//  ÓÃ0Ìî³äÒ»¸öblockÊ£ÏÂµÄ²¿·Ö¡£
-		//  ftell() ·µ»Ø´ÓÎÄ¼ş¿ªÍ·µ½Ä¿Ç°µÄÎ»ÖÃÓĞ¼¸¸öbytes¡£
+		//  ç”¨0å¡«å……ä¸€ä¸ªblockå‰©ä¸‹çš„éƒ¨åˆ†ã€‚
+		//  ftell() è¿”å›ä»æ–‡ä»¶å¼€å¤´åˆ°ç›®å‰çš„ä½ç½®æœ‰å‡ ä¸ªbytesã€‚
 		// ---------------------------------------------------------------------
 		char* buffer = nullptr;
 		int len = block_length_ - static_cast<int>(ftell(fp_));				// cmpt remain length of a block
@@ -131,7 +131,7 @@ int BlockFile::fread_number() const  // read an <int> value from bin file
 // -----------------------------------------------------------------------------
 //  Note that this func does not read the header of blockfile. It fetches the 
 //  info in the first block excluding the header of blockfile.
-//  ÓÃÀ´Ìø¹ıheader£¬Îª¶ÁÈ¡ºóÃæµÄÊı¾İ×öºÃ×¼±¸¡£
+//  ç”¨æ¥è·³è¿‡headerï¼Œä¸ºè¯»å–åé¢çš„æ•°æ®åšå¥½å‡†å¤‡ã€‚
 // -----------------------------------------------------------------------------
 void BlockFile::read_header(		// read remain bytes excluding header
 	char* buffer)						// contain remain bytes (return)
@@ -157,7 +157,7 @@ void BlockFile::read_header(		// read remain bytes excluding header
 // -----------------------------------------------------------------------------
 //  Note that this func does not write the header of blockfile. It writes the 
 //  info in the first block excluding the header of blockfile.
-//  ÔÚ»ù±¾µÄheader£¨2¸öint£¬·Ö±ğÎªblockµÄ³¤¶ÈºÍ¸öÊı£©ÒÔÍâ´¢´æ¶îÍâµÄĞÅÏ¢¡£
+//  åœ¨åŸºæœ¬çš„headerï¼ˆ2ä¸ªintï¼Œåˆ†åˆ«ä¸ºblockçš„é•¿åº¦å’Œä¸ªæ•°ï¼‰ä»¥å¤–å‚¨å­˜é¢å¤–çš„ä¿¡æ¯ã€‚
 // -----------------------------------------------------------------------------
 void BlockFile::set_header(			// set remain bytes excluding header
 	char* header)						// contain remain bytes
@@ -186,32 +186,32 @@ void BlockFile::set_header(			// set remain bytes excluding header
 //
 //  We point out the difference of counting among the <number>, <act_block> 
 //  and <pos>.
-//  (1) <num_blocks_>: ¼ÇÂ¼blockµÄ¸öÊı£¬²»°üÀ¨headerµÄblock£¬´Ó1¿ªÊ¼¡£
-//  (2) <act_block_>: ¼ÇÂ¼µ±Ç°ÒÑ¾­¶ÁĞ´µÄblockµÄ¸öÊı£¬°üÀ¨headerµÄblock£¬
-//      Òò´Ëµ±ÎÒÃÇÔÚ¶ÁĞ´ÎÄ¼şµÄÊ±ºò£¬<act_block>Îª1£¨ÒÑ¾­¶Á¹ıÁËheader£©¡£ËüºÍÎÄ¼şÖ¸ÕëÏà¶ÔÓ¦¡£ 
-//  (3) <index> : ¼ÇÂ¼ÎÒÃÇ´òËã¶ÁĞ´µÄblockµÄÎ»ÖÃ£¬²»°üÀ¨headerµÄblock£¬´Ó0¿ªÊ¼¡£
-//      ÀıÈçµ±<index> = 0Ê±£¬ÎÄ¼şÖ¸ÕëÖ¸ÏòheaderµÄblockµÄÏÂÒ»¸öblock£¬´ËÊ±<act_block_>µÈÓÚ1¡£
+//  (1) <num_blocks_>: è®°å½•blockçš„ä¸ªæ•°ï¼Œä¸åŒ…æ‹¬headerçš„blockï¼Œä»1å¼€å§‹ã€‚
+//  (2) <act_block_>: è®°å½•å½“å‰å·²ç»è¯»å†™çš„blockçš„ä¸ªæ•°ï¼ŒåŒ…æ‹¬headerçš„blockï¼Œ
+//      å› æ­¤å½“æˆ‘ä»¬åœ¨è¯»å†™æ–‡ä»¶çš„æ—¶å€™ï¼Œ<act_block>ä¸º1ï¼ˆå·²ç»è¯»è¿‡äº†headerï¼‰ã€‚å®ƒå’Œæ–‡ä»¶æŒ‡é’ˆç›¸å¯¹åº”ã€‚ 
+//  (3) <index> : è®°å½•æˆ‘ä»¬æ‰“ç®—è¯»å†™çš„blockçš„ä½ç½®ï¼Œä¸åŒ…æ‹¬headerçš„blockï¼Œä»0å¼€å§‹ã€‚
+//      ä¾‹å¦‚å½“<index> = 0æ—¶ï¼Œæ–‡ä»¶æŒ‡é’ˆæŒ‡å‘headerçš„blockçš„ä¸‹ä¸€ä¸ªblockï¼Œæ­¤æ—¶<act_block_>ç­‰äº1ã€‚
 //
-//  Àı×Ó£ºÈç¹ûnumberÎª3£¬ÄÇÃ´ÎÄ¼şÀïÒ»¹²ÓĞ4¸öblock£¬ÆäÖĞÓĞÒ»¸öheaderµÄblockºÍ3¸ödataµÄblock¡£
+//  ä¾‹å­ï¼šå¦‚æœnumberä¸º3ï¼Œé‚£ä¹ˆæ–‡ä»¶é‡Œä¸€å…±æœ‰4ä¸ªblockï¼Œå…¶ä¸­æœ‰ä¸€ä¸ªheaderçš„blockå’Œ3ä¸ªdataçš„blockã€‚
 //
-//  µ±ÎÄ¼ş±»´ò¿ª£¬<act_block_>Îª1¡£Èç¹û<index>Îª1£¬ÕâÒâÎ¶×ÅÎÒÃÇ´òËã¶ÁĞ´µÚÈı¸öblock
-//  £¨µÚ¶ş¸ödataµÄblock£©£¬Òò´ËÊ×ÏÈindex×ÔÔö±ä³É2£¬È»ºófeesk°ÑÎÄ¼şÖ¸ÕëÒÆµ½µÚ¶ş¸ödataµÄblock¡£
+//  å½“æ–‡ä»¶è¢«æ‰“å¼€ï¼Œ<act_block_>ä¸º1ã€‚å¦‚æœ<index>ä¸º1ï¼Œè¿™æ„å‘³ç€æˆ‘ä»¬æ‰“ç®—è¯»å†™ç¬¬ä¸‰ä¸ªblock
+//  ï¼ˆç¬¬äºŒä¸ªdataçš„blockï¼‰ï¼Œå› æ­¤é¦–å…ˆindexè‡ªå¢å˜æˆ2ï¼Œç„¶åfeeskæŠŠæ–‡ä»¶æŒ‡é’ˆç§»åˆ°ç¬¬äºŒä¸ªdataçš„blockã€‚
 //
-//  ¶ÔµÚ¶ş¸ödataµÄblock¶ÁĞ´½áÊøºó£¬ÎÄ¼şÖ¸ÕëÖ¸ÏòµÚÈı¸öÊı¾İµÄblock¡£´ËÊ±ÒÑ¾­¶ÁĞ´ÁË3¸öblock£¬
-//  £¨1¸öheader£¬2¸ödata£©Òò´ËÏÖÔÚ<act_block> = <index> + 1 = 2 + 1 = 3¡£
+//  å¯¹ç¬¬äºŒä¸ªdataçš„blockè¯»å†™ç»“æŸåï¼Œæ–‡ä»¶æŒ‡é’ˆæŒ‡å‘ç¬¬ä¸‰ä¸ªæ•°æ®çš„blockã€‚æ­¤æ—¶å·²ç»è¯»å†™äº†3ä¸ªblockï¼Œ
+//  ï¼ˆ1ä¸ªheaderï¼Œ2ä¸ªdataï¼‰å› æ­¤ç°åœ¨<act_block> = <index> + 1 = 2 + 1 = 3ã€‚
 // -----------------------------------------------------------------------------
 bool BlockFile::read_block(			// read a <block> from <index>
 	Block block,						// a <block> (return)
-	int index)							// Òª¶ÁÈ¡µÚ¼¸ºÅdataµÄblock£¨´Ó0¿ªÊ¼£©
+	int index)							// è¦è¯»å–ç¬¬å‡ å·dataçš„blockï¼ˆä»0å¼€å§‹ï¼‰
 {
-	index++;						// ×ÔÔöºó£¬±íÊ¾ÒªËùÓĞblockÖĞµÄµÚ¼¸ºÅ£¨headerµÄblockÊÇµÚ0ºÅ£©
+	index++;						// è‡ªå¢åï¼Œè¡¨ç¤ºè¦æ‰€æœ‰blockä¸­çš„ç¬¬å‡ å·ï¼ˆheaderçš„blockæ˜¯ç¬¬0å·ï¼‰
 									// move to the position
 	if (index <= num_blocks_ && index > 0) {
 		seek_block(index);
-		// ¾Ù¸öÀı×Ó£¬¼ÙÉè´ËÊ±indexÊÇ1£¬´ú±íÒª·ÃÎÊµÚÒ»¸ödataµÄblock£¬
-		// Èç¹û´ËÊ±act_block_ºÍindexÏàµÈ£¬Ò²Îª1£¬´ú±íÒÑ¾­¶ÁĞ´¹ı1¸ö¿é£¨¾ÍÊÇheader¿é£©¡£
-		// ´ú±í´ËÊ±ÎÄ¼şÖ¸ÕëÖ¸ÏòµÚÒ»¸ödataµÄblockµÄ¿ªÍ·£¬Òò´ËÎÄ¼şÖ¸Õë²»ĞèÒªÒÆ¶¯¡£
-		// ²é¿´seek_blockº¯ÊıµÄÔ´ÂëÀ´½øÒ»²½ÁË½â¡£
+		// ä¸¾ä¸ªä¾‹å­ï¼Œå‡è®¾æ­¤æ—¶indexæ˜¯1ï¼Œä»£è¡¨è¦è®¿é—®ç¬¬ä¸€ä¸ªdataçš„blockï¼Œ
+		// å¦‚æœæ­¤æ—¶act_block_å’Œindexç›¸ç­‰ï¼Œä¹Ÿä¸º1ï¼Œä»£è¡¨å·²ç»è¯»å†™è¿‡1ä¸ªå—ï¼ˆå°±æ˜¯headerå—ï¼‰ã€‚
+		// ä»£è¡¨æ­¤æ—¶æ–‡ä»¶æŒ‡é’ˆæŒ‡å‘ç¬¬ä¸€ä¸ªdataçš„blockçš„å¼€å¤´ï¼Œå› æ­¤æ–‡ä»¶æŒ‡é’ˆä¸éœ€è¦ç§»åŠ¨ã€‚
+		// æŸ¥çœ‹seek_blockå‡½æ•°çš„æºç æ¥è¿›ä¸€æ­¥äº†è§£ã€‚
 	}
 	else {
 		printf("BlockFile::read_block request the block %d "
@@ -231,8 +231,8 @@ bool BlockFile::read_block(			// read a <block> from <index>
 }
 
 // -----------------------------------------------------------------------------
-//  Õâ¸öº¯ÊıÊÇÓÃÀ´Ğ´ÒÑ¾­´æÔÚµÄblockµÄ£¬²»ÄÜ³¬¹ı<num_blocks>µÄ·¶Î§¡£
-//  Èç¹ûÒª·ÖÅäĞÂµÄblock£¬Ó¦¸Ãµ÷ÓÃappend_blockº¯Êı¡£
+//  è¿™ä¸ªå‡½æ•°æ˜¯ç”¨æ¥å†™å·²ç»å­˜åœ¨çš„blockçš„ï¼Œä¸èƒ½è¶…è¿‡<num_blocks>çš„èŒƒå›´ã€‚
+//  å¦‚æœè¦åˆ†é…æ–°çš„blockï¼Œåº”è¯¥è°ƒç”¨append_blockå‡½æ•°ã€‚
 // -----------------------------------------------------------------------------
 bool BlockFile::write_block(		// write a <block> into <index>
 	Block block,						// a <block>
@@ -261,7 +261,7 @@ bool BlockFile::write_block(		// write a <block> into <index>
 }
 
 // -----------------------------------------------------------------------------
-//  ÔÚÎÄ¼şÄ©Î²×·¼ÓĞÂµÄblock¡£ÎÄ¼şÖ¸ÕëÖ¸ÏòĞÂ×·¼ÓµÄblock²¢·µ»ØËüµÄÎ»ÖÃ(´Ó0¿ªÊ¼µÄ²»°üÀ¨headerµÄblock±àºÅ)¡£
+//  åœ¨æ–‡ä»¶æœ«å°¾è¿½åŠ æ–°çš„blockã€‚æ–‡ä»¶æŒ‡é’ˆæŒ‡å‘æ–°è¿½åŠ çš„blockå¹¶è¿”å›å®ƒçš„ä½ç½®(ä»0å¼€å§‹çš„ä¸åŒ…æ‹¬headerçš„blockç¼–å·)ã€‚
 // -----------------------------------------------------------------------------
 int BlockFile::append_block(		// append new block at the end of file
 	Block block)						// the new block
@@ -270,7 +270,7 @@ int BlockFile::append_block(		// append new block at the end of file
 	put_bytes(block, block_length_);// write a <block>
 	num_blocks_++;					// add 1 to <num_blocks_>
 	
-	fseek(fp_, SIZEINT, SEEK_SET);	// <fp_> point to pos of header£¬Ìø¹ıÒ»¸öintµÄ´óĞ¡£¬ÒòÎªµÚÒ»¸öint´¢´æÒ»¸öblockµÄ´óĞ¡
+	fseek(fp_, SIZEINT, SEEK_SET);	// <fp_> point to pos of headerï¼Œè·³è¿‡ä¸€ä¸ªintçš„å¤§å°ï¼Œå› ä¸ºç¬¬ä¸€ä¸ªintå‚¨å­˜ä¸€ä¸ªblockçš„å¤§å°
 	fwrite_number(num_blocks_);		// update <num_blocks_>
 
 	// -------------------------------------------------------------------------
@@ -287,7 +287,7 @@ int BlockFile::append_block(		// append new block at the end of file
 // -----------------------------------------------------------------------------
 //  Delete last <num> block in the file.
 //
-//  Ö»ÊÇĞŞ¸ÄÁËblockµÄ¸öÊı£¬Êı¾İ»¹ÊÇ´¢´æÔÚÎÄ¼şÖĞ£¬ÎÄ¼ş´óĞ¡²»±ä¡£
+//  åªæ˜¯ä¿®æ”¹äº†blockçš„ä¸ªæ•°ï¼Œæ•°æ®è¿˜æ˜¯å‚¨å­˜åœ¨æ–‡ä»¶ä¸­ï¼Œæ–‡ä»¶å¤§å°ä¸å˜ã€‚
 // -----------------------------------------------------------------------------
 bool BlockFile::delete_last_blocks(	// delete last <num> blocks
 	int num)							// number of blocks to be deleted
