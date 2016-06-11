@@ -44,6 +44,7 @@
 #include "b_node.h"
 #include "b_tree.h"
 #include "LItem.h"
+#include "medrank.h"
 
 using namespace std;
 
