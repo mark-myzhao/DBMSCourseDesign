@@ -1,14 +1,14 @@
 #include "LItem.h"
 
-void LItem::set(int index, double value) {
+void LItem::set(int index, float value) {
     index_ = index;
     value_ = value;
 };
 
-int LItem::getIndex() {
+int LItem::getIndex() const {
     return index_;
 };
 
-double LItem::getValue() {
+float LItem::getValue() const {
     return this->value_;
 };

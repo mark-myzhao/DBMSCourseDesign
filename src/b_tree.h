@@ -8,7 +8,7 @@ class BNode;
 class LItem;
 
 // -----------------------------------------------------------------------------
-//  BTree: b-tree to index hash tables produced by qalsh
+//  BTree: 建立在Lj集合上的B+树
 // -----------------------------------------------------------------------------
 class BTree {
 public:

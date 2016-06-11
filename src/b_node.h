@@ -198,7 +198,7 @@ public:
 
 protected:
 	int  num_keys_;					// number of keys
-	int* index_;						// object id
+	int* index_;					// object id
 
 	int capacity_keys_;				// max num of keys can be stored
 };

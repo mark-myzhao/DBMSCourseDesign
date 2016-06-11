@@ -195,28 +195,31 @@ BIndexNode::~BIndexNode()			// destructor
 		write_to_buffer(buf);
 		btree_->file_->write_block(buf, block_);
 
-		delete[] buf;buf = nullptr;
+		delete[] buf;
+		buf = nullptr;
 	}
 
 	if (value_) {						// release <value_>
-		delete[] value_; value_ = nullptr;
+		delete[] value_; 
+		value_ = nullptr;
 	}
 	if (son_) {						// release <son_>
-		delete[] son_; son_ = nullptr;
+		delete[] son_; 
+		son_ = nullptr;
 	}
 }
 
 // -----------------------------------------------------------------------------
 void BIndexNode::init(				// init a new node, which not exist
-	int level,							// level (depth) in b-tree
-	BTree* btree)						// b-tree of this node
+	int level,					    // level (depth) in b-tree
+	BTree* btree)					// b-tree of this node
 {
 	btree_ = btree;					// init <btree_>
 	level_ = static_cast<char>(level);			// init <level_>
 
 	num_entries_ = 0;				// init <num_entries_>
 	left_sibling_ = -1;				// init <left_sibling_>
-	right_sibling_ = -1;				// init <right_sibling_>
+	right_sibling_ = -1;			// init <right_sibling_>
 	dirty_ = true;					// init <dirty_>
 
 									// init <capacity_>
@@ -239,7 +242,8 @@ void BIndexNode::init(				// init a new node, which not exist
 
 	char* blk = new char[b_length];	// init <block_>, get new addr
 	block_ = btree_->file_->append_block(blk);
-	delete[] blk; blk = NULL;
+	delete[] blk; 
+	blk = NULL;
 }
 
 // -----------------------------------------------------------------------------
@@ -322,7 +326,7 @@ void BIndexNode::read_from_buffer(	// read a b-node from buffer
 
 // -----------------------------------------------------------------------------
 void BIndexNode::write_to_buffer(	// write info of node into buffer
-	char* buf)							// store info of this node (return)
+	char* buf)						// store info of this node (return)
 {
 	int i = 0;						// write <level_>
 	memcpy(&buf[i], &level_, SIZECHAR);
@@ -375,7 +379,7 @@ void BIndexNode::find_position_by_key(	// find pos just less than input key
 
 // -----------------------------------------------------------------------------
 float BIndexNode::get_key(			// get <key> indexed by <index>
-	int index)							// input index
+	int index)						// input index
 {
 	if (index < 0 || index >= num_entries_) {
 		error("BIndexNode::get_key out of range.", true);
@@ -464,14 +468,17 @@ BLeafNode::~BLeafNode()				// destructor
 		write_to_buffer(buf);
 		btree_->file_->write_block(buf, block_);
 
-		delete[] buf;buf = nullptr;
+		delete[] buf;
+		buf = nullptr;
 	}
 
 	if (value_) {						// release <value_>
-		delete[] value_; value_ = nullptr;
+		delete[] value_; 
+		value_ = nullptr;
 	}
 	if (index_) {						// release <index_>
-		delete[] index_; index_ = nullptr;
+		delete[] index_; 
+		index_ = nullptr;
 	}
 }
 
@@ -481,7 +488,7 @@ void BLeafNode::init(				// init a new node, which not exist
 	BTree* btree)						// b-tree of this node
 {
 	btree_ = btree;					// init <btree_>
-	level_ = static_cast<char>(level);			// init <level_>
+	level_ = static_cast<char>(level);	// init <level_>
 
 	num_entries_ = 0;				// init <num_entries_>
 	num_keys_ = 0;					// init <num_keys_>
@@ -712,7 +719,7 @@ BLeafNode* BLeafNode::get_right_sibling()
 
 // -----------------------------------------------------------------------------
 int BLeafNode::get_key_size(		// get key size of this node
-	int _block_length)					// block length
+	int _block_length)				// block length
 {
 	capacity_keys_ = static_cast<int>(ceil(static_cast<float>(_block_length) / INDEX_SIZE_LEAF_NODE));
 

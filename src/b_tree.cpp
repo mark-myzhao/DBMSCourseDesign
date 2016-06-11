@@ -2,7 +2,7 @@
 
 
 // -----------------------------------------------------------------------------
-//  BTree: b-tree to index hash values produced by qalsh
+//  BTree: 建立在Lj集合上的B+树
 // -----------------------------------------------------------------------------
 BTree::BTree() // constructor
 {
@@ -35,9 +35,9 @@ BTree::~BTree() // destructor
 }
 
 // -----------------------------------------------------------------------------
-void BTree::init(// init a new tree
-	char* fname, // file name
-	int b_length) // block length
+void BTree::init(		// init a new tree
+	char* fname, 		// file name
+	int b_length) 		// block length
 {
 	FILE* fp = fopen(fname, "r");
 	if (fp)
@@ -140,9 +140,9 @@ void BTree::delete_root() // delete <root_ptr>
 }
 
 // -----------------------------------------------------------------------------
-int BTree::bulkload(// bulkload a tree from memory
-	LItem* Ltable, // hash table
-	int n) // number of entries
+int BTree::bulkload(	// bulkload a tree from memory
+	LItem* Ltable, 		// Lj table
+	int n) 				// number of entries
 {
 	BIndexNode* index_child = nullptr;
 	BIndexNode* index_prev_nd = nullptr;
@@ -156,16 +156,16 @@ int BTree::bulkload(// bulkload a tree from memory
 	int block = -1;
 	float value = MINREAL;
 
-	bool first_node = false; // determine relationship of sibling
-	int start_block = -1; // position of first node
-	int end_block = -1; // position of last node
+	bool first_node = false; 	// determine relationship of sibling
+	int start_block = -1;		// position of first node
+	int end_block = -1;			// position of last node
 
-	int current_level = -1; // current level (leaf level is 0)
-	int last_start_block = -1; // to build b-tree level by level
-	int last_end_block = -1; // to build b-tree level by level
+	int current_level = -1; 	// current level (leaf level is 0)
+	int last_start_block = -1; 	// to build b-tree level by level
+	int last_end_block = -1; 	// to build b-tree level by level
 
 	// -------------------------------------------------------------------------
-	//  Build leaf node from <_hashtable> (level = 0)
+	//  Build leaf node from <LItem table> (level = 0)
 	// -------------------------------------------------------------------------
 	start_block = 0;
 	end_block = 0;
@@ -179,7 +179,7 @@ int BTree::bulkload(// bulkload a tree from memory
 		if (!leaf_act_nd)
 		{
 			leaf_act_nd = new BLeafNode();
-			leaf_act_nd->init(0, this);
+			leaf_act_nd->init(0, this);      //  level 0, linked to this tree
 
 			if (first_node)
 			{

@@ -46,8 +46,7 @@ BlockFile::BlockFile(				// constructor
 		new_flag_ = false;			// reinit <block_length_> by file
 		block_length_ = fread_number();
 		num_blocks_ = fread_number();
-	}
-	else {
+	} else {
 		// ---------------------------------------------------------------------
 		//  <file_name_> not exists. we construct new file and reinit paras.
 		// ---------------------------------------------------------------------
