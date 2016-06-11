@@ -171,23 +171,21 @@ int BTree::bulkload(	// bulkload a tree from memory
 	end_block = 0;
 	first_node = true;
 
-	for (int i = 0; i < n; i++)
-	{
+	//  存储level 0数据 建立叶子节点间的双向链表
+	for (int i = 0; i < n; i++) {
 		index = Ltable[i].getIndex();
 		value = Ltable[i].getValue();
 
-		if (!leaf_act_nd)
-		{
+		if (!leaf_act_nd) {
 			leaf_act_nd = new BLeafNode();
 			leaf_act_nd->init(0, this);      //  level 0, linked to this tree
 
-			if (first_node)
-			{
-				first_node = false; // init <start_block>
+			if (first_node) {
+				// init <start_block>
+				first_node = false; 
 				start_block = leaf_act_nd->get_block();
-			}
-			else
-			{ // label sibling
+			} else { 
+				// label sibling
 				leaf_act_nd->set_left_sibling(leaf_prev_nd->get_block());
 				leaf_prev_nd->set_right_sibling(leaf_act_nd->get_block());
 
@@ -195,22 +193,22 @@ int BTree::bulkload(	// bulkload a tree from memory
 				leaf_prev_nd = nullptr;
 			}
 			end_block = leaf_act_nd->get_block();
-		} // add new entry
+		}     
+		// add new entry
 		leaf_act_nd->add_new_child(index, value);
 
-		if (leaf_act_nd->isFull())
-		{// change next node to store entries
+		if (leaf_act_nd->isFull()) {
+			// change next node to store entries
 			leaf_prev_nd = leaf_act_nd;
 			leaf_act_nd = nullptr;
 		}
 	}
-	if (leaf_prev_nd != nullptr)
-	{ // release the space
+	if (leaf_prev_nd != nullptr) { 
+		// release the space
 		delete leaf_prev_nd;
 		leaf_prev_nd = nullptr;
 	}
-	if (leaf_act_nd != nullptr)
-	{
+	if (leaf_act_nd != nullptr) {
 		delete leaf_act_nd;
 		leaf_act_nd = nullptr;
 	}
@@ -222,23 +220,20 @@ int BTree::bulkload(	// bulkload a tree from memory
 	last_start_block = start_block;
 	last_end_block = end_block;
 
-	while (last_end_block > last_start_block)
-	{
+	//  建立索引节点
+	while (last_end_block > last_start_block) {
 		first_node = true;
-		for (int i = last_start_block; i <= last_end_block; i++)
-		{
-			block = i; // get <block>
-			if (current_level == 1)
-			{
+		for (int i = last_start_block; i <= last_end_block; i++) {
+			block = i;
+			// get <block>
+			if (current_level == 1) {
 				leaf_child = new BLeafNode();
 				leaf_child->init_restore(this, block);
 				value = leaf_child->get_key_of_node();
 
 				delete leaf_child;
 				leaf_child = nullptr;
-			}
-			else
-			{
+			} else {
 				index_child = new BIndexNode();
 				index_child->init_restore(this, block);
 				value = index_child->get_key_of_node();
@@ -247,18 +242,14 @@ int BTree::bulkload(	// bulkload a tree from memory
 				index_child = nullptr;
 			}
 
-			if (!index_act_nd)
-			{
+			if (!index_act_nd) {
 				index_act_nd = new BIndexNode();
 				index_act_nd->init(current_level, this);
 
-				if (first_node)
-				{
+				if (first_node) {
 					first_node = false;
 					start_block = index_act_nd->get_block();
-				}
-				else
-				{
+				} else {
 					index_act_nd->set_left_sibling(index_prev_nd->get_block());
 					index_prev_nd->set_right_sibling(index_act_nd->get_block());
 
@@ -269,19 +260,17 @@ int BTree::bulkload(	// bulkload a tree from memory
 			} // add new entry
 			index_act_nd->add_new_child(value, block);
 
-			if (index_act_nd->isFull())
-			{
+			if (index_act_nd->isFull()) {
 				index_prev_nd = index_act_nd;
 				index_act_nd = nullptr;
 			}
 		}
-		if (index_prev_nd != nullptr)
-		{// release the space
+		if (index_prev_nd != nullptr) {
+			// release the space
 			delete index_prev_nd;
 			index_prev_nd = nullptr;
 		}
-		if (index_act_nd != nullptr)
-		{
+		if (index_act_nd != nullptr) {
 			delete index_act_nd;
 			index_act_nd = nullptr;
 		}
@@ -292,33 +281,28 @@ int BTree::bulkload(	// bulkload a tree from memory
 	}
 	root_ = last_start_block; // update the <root>
 
-	if (index_prev_nd != nullptr)
-	{
+	//  释放内存空间
+	if (index_prev_nd != nullptr) {
 		delete index_prev_nd;
 		index_prev_nd = nullptr;
 	}
-	if (index_act_nd != nullptr)
-	{
+	if (index_act_nd != nullptr) {
 		delete index_act_nd;
 		index_act_nd = nullptr;
 	}
-	if (index_child != nullptr)
-	{
+	if (index_child != nullptr) {
 		delete index_child;
 		index_child = nullptr;
 	}
-	if (leaf_prev_nd != nullptr)
-	{
+	if (leaf_prev_nd != nullptr) {
 		delete leaf_prev_nd;
 		leaf_prev_nd = nullptr;
 	}
-	if (leaf_act_nd != nullptr)
-	{
+	if (leaf_act_nd != nullptr) {
 		delete leaf_act_nd;
 		leaf_act_nd = NULL;
 	}
-	if (leaf_child != NULL)
-	{
+	if (leaf_child != NULL) {
 		delete leaf_child;
 		leaf_child = NULL;
 	}

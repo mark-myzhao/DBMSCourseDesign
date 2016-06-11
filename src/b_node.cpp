@@ -771,8 +771,8 @@ void BLeafNode::add_new_child(		// add new child by input index and value
 	//		error("BLeafNode::add_new_child value overflow", true);
 	//	}
 
-		value_[num_keys_] = value;		// add new value into its pos
-		num_keys_++;				// update <num_keys>
+	value_[num_keys_] = value; 		// add new value into its pos
+	num_keys_++;				    // update <num_keys>
 	//}
 
 	num_entries_++;					// update <num_entries>
