@@ -8,10 +8,10 @@ LItem *Litems[50][60000];
 
 int main() {
     FILE *ifile = fopen("dataset.txt", "r");
-    double result[50];              //temp result after projecting
+    float result[50];              //temp result after projecting
     int id;                         //the id of the vector and it would not be used
     int dimension;                  //the dimensions of the vector read from the file dataset.txt
-    double randomVectors[50][784];
+	float randomVectors[50][784];
     
     
     createVectors(randomVectors);
@@ -21,7 +21,6 @@ int main() {
         for(int j = 0; j < 50; j++) {
             result[j] = 0;
         }
-        int count = 0;
         for(int j = 0; j  < 784; j++) {
             fscanf(ifile, "%d", &dimension);
             for(int k = 0; k < 50; k++) { 

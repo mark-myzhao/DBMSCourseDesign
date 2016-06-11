@@ -2,11 +2,12 @@
 #define _DEF_H_
 
 #include <cstdlib>
+#include <cstdio>
 
 // -----------------------------------------------------------------------------
 //  Typedefs
 // -----------------------------------------------------------------------------
-typedef char Block[];  // 意思是，Block类型=char[]类型
+typedef char Block[];  // 鎰忔�濇槸锛孊lock绫诲瀷=char[]绫诲瀷
 typedef int POSPOINTER;           //  distinguish int from position pointers
 
 // -----------------------------------------------------------------------------
@@ -35,22 +36,24 @@ const int   MAXINT = 2147483647;	// max integer value
 const int   MININT = -MAXINT;	// min integer value
 
 								// size of type <int>
-const int   SIZEINT = (int) sizeof(int);
+const int   SIZEINT = static_cast<int>(sizeof(int));
 // size of type <char>
-const int   SIZECHAR = (int) sizeof(char);
+const int   SIZECHAR = static_cast<int>(sizeof(char));
 // size of type <float>
-const int   SIZEFLOAT = (int) sizeof(float);
+const int   SIZEFLOAT = static_cast<int>(sizeof(float));
 // size of type <bool>
-const int   SIZEBOOL = (int) sizeof(bool);
+const int   SIZEBOOL = static_cast<int>(sizeof(bool));
 
 // file header size
-const int   BFHEAD_LENGTH = (int)(sizeof(int) * 2);
+const int   BFHEAD_LENGTH = static_cast<int>(sizeof(int) * 2);
 // index size of leaf node
 const int   INDEX_SIZE_LEAF_NODE = 4096;
-const int   MAXK = 100;				// max top-k value
 
 const int BUFFERSIZE = 10000;    //  10KB
+const int BLOKCLENGTH = 1000;    //  1KB
+const int NODESIZE = 40;         //  40 entries in one node
 
+const int TREENUM = 50;          //  50 B+ Tree totally
 // -----------------------------------------------------------------------------
 //  Funuctions
 // -----------------------------------------------------------------------------
