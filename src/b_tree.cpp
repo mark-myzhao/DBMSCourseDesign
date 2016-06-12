@@ -1,5 +1,10 @@
-#include "headers.h"
-
+#pragma warning(disable:4996)
+#include "b_node.h"
+#include "b_tree.h"
+#include "block_file.h"
+#include "LItem.h"
+#include <cstring>
+#include <cassert>
 
 // -----------------------------------------------------------------------------
 //  BTree: 建立在Lj集合上的B+树
@@ -172,6 +177,7 @@ int BTree::bulkload(	// bulkload a tree from memory
 
 	//  存储level 0数据 建立叶子节点间的双向链表
 	for (int i = 0; i < n; i++) {
+		printf("working4:%d\n", i);
 		index = Ltable[i].getIndex();
 		value = Ltable[i].getValue();
 

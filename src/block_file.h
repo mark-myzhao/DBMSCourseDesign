@@ -1,5 +1,7 @@
 #ifndef __BLOCK_FILE_H
 #define __BLOCK_FILE_H
+#include <cstdio>
+#include "def.h"
 
 
 // -----------------------------------------------------------------------------

@@ -1,4 +1,6 @@
-#include "headers.h"
+#pragma warning(disable:4996)
+#include "block_file.h"
+#include <cstring>
 
 // -----------------------------------------------------------------------------
 //  Some points to NOTE:

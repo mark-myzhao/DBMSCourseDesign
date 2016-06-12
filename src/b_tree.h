@@ -4,7 +4,7 @@
 
 class BlockFile;
 class BNode;
-
+class BLeafNode;
 class LItem;
 
 // -----------------------------------------------------------------------------

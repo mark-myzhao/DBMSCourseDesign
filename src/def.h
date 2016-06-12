@@ -1,7 +1,10 @@
 #ifndef _DEF_H_
 #define _DEF_H_
-
-
+#pragma warning(disable:4996)
+#include <cstdio>
+#include <cmath>
+#include <cstdlib>
+using namespace std;
 // -----------------------------------------------------------------------------
 //  Typedefs
 // -----------------------------------------------------------------------------
@@ -48,10 +51,11 @@ const int   BFHEAD_LENGTH = static_cast<int>(sizeof(int) * 2);
 const int   INDEX_SIZE_LEAF_NODE = 4096;
 
 const int BUFFERSIZE = 10000;    //  10KB
-const int BLOKCLENGTH = 1000;    //  1KB
+const int BLOCKLENGTH = 1000;    //  1KB
 const int NODESIZE = 40;         //  40 entries in one node
 
 const int TREENUM = 50;          //  50 B+ Tree totally
+
 // -----------------------------------------------------------------------------
 //  Funuctions
 // -----------------------------------------------------------------------------
@@ -59,7 +63,9 @@ inline void error(							// display an error message
 	char* msg,							// message
 	bool is_exit)						// whether exit
 {
+	char c;
 	printf(msg);
+	scanf("%c", &c);
 	if (is_exit) exit(1);
 }
 

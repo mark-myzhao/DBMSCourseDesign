@@ -2,9 +2,6 @@
 #include <cmath>
 #include <ctime>
 #include <limits>
-#include "def.h"
-
-using namespace std;
 
 float uniform() {
 	int x;
@@ -17,11 +14,10 @@ float uniform() {
 
 float uniform_fun() {
 	float A = sqrt((-2)*log(uniform()));
-	float B = 2 * PI*uniform();
+	float B = 2 * acos(-1) * uniform();
 	float C = A*cos(B);
 	return C;
 }
-
 
 
 void createVectors(float a[][784]) {

@@ -1,4 +1,5 @@
-using namespace std;
+#ifndef __L_ITEM_H
+#define __L_ITEM_H
 
 class LItem {
     public:
@@ -10,3 +11,4 @@ class LItem {
         int index_;
         float value_;
 };
+#endif

@@ -1,8 +1,13 @@
-#include "headers.h"
+#include "b_node.h"
+#include "b_tree.h"
+#include "block_file.h"
+#include "cmath"
+#include <cstring>
 
 // -----------------------------------------------------------------------------
 //  BNode: basic structure of node in b-tree
 // -----------------------------------------------------------------------------
+
 BNode::BNode()						// constructor
 {
 	level_ = -1;

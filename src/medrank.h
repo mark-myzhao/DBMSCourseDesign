@@ -5,14 +5,8 @@ class medrank {
 public:
     medrank();
     ~medrank();
-    int runAlgorithm(LItem* q, char* BTreeFname);
-private:
-    BTree** btrees_;
-
-    char indexPath_[200];  //  PATH
-
-    //  store file name in <fileName>
-    void generateFileName(int id, char* fileName);
+    int runAlgorithm(float* q);
+	static void generateFileName(int id, char* fileName);
 };
 
 #endif

@@ -1,24 +1,20 @@
-#include "headers.h"
+#pragma warning(disable:4996)
+#include "medrank.h"
+#include "b_node.h"
+#include "b_tree.h"
+#include "def.h"
+#include <cstring>
 
-medrank::medrank() : indexPath_("./Btree") {
-    btrees_ = nullptr;
+medrank::medrank() {
 }
 
 medrank::~medrank() {
-    for (int i = 0; i < TREENUM; ++i) {
-        if (btrees_ != nullptr) {
-            delete btrees_[i];
-            btrees_[i] = nullptr;
-        }
-    }
-    delete [] btrees_;
-    btrees_ = nullptr;
 }
 
 //  projected query vector, length = 50
-int medrank::runAlgorithm(LItem* q, char* BTreeFname) {  
+int medrank::runAlgorithm(float* q){  
     int *vote = new int[60000];
-    memset(vote, 0, 784);        //  初始化为0
+    memset(vote, 0, 60000);        //  初始化为0
     int curLargestVoteNum = 0;   //  记录当前最多票数
     BLeafNode* resultNode = nullptr;//  记录最终结果
     int resultIndex = -1;        //  记录最终结果
@@ -32,12 +28,14 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
     }
 
     //  初始化B+树
-    BTree tree;
-    tree.init_restore(BTreeFname);
+    BTree trees[50];
+	char BTreeFname[50];
 
     //  第一次查询
     for (int i = 0; i < 50; ++i) {
-        tree.searchLowerAndHigher(q[i].getValue(),
+		generateFileName(i, BTreeFname);
+		trees[i].init_restore(BTreeFname);
+		trees[i].searchLowerAndHigher(q[i],
                                    lower[i], lowerIndex[i],
                                    higher[i], higherIndex[i]);
     }
@@ -54,10 +52,9 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
                 flag = true;
             } else if (higher[i] == nullptr && lower[i] == nullptr) {
                 //  error
-                bool error = true;
-                assert(error == false);
+				error("higher == NULL and lower  == NULL", true);
             } else {
-                if (q[i].getValue() - lower[i]->get_key(lowerIndex[i]) < higher[i]->get_key(higherIndex[i])) {
+                if (q[i] - lower[i]->get_key(lowerIndex[i]) < higher[i]->get_key(higherIndex[i])) {
                     //  lower[lowerIndex] is nearer
                     flag = false;
                 } else {
@@ -85,6 +82,12 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
             } else {
                 //  lower[lowerIndex] is nearer
                 vote[lower[i]->get_entry_id(lowerIndex[i])]++;
+				//  保存curLagerestNum为当前最大票数,更新结果
+				if (vote[lower[i]->get_entry_id(lowerIndex[i])] > curLargestVoteNum) {
+					curLargestVoteNum = vote[lower[i]->get_entry_id(lowerIndex[i])];
+					resultNode = lower[i];
+					resultIndex = lowerIndex[i];
+				}
                 --lowerIndex[i];
                 if (lowerIndex[i] < 0) {
                     lower[i] = lower[i]->get_left_sibling();
@@ -99,13 +102,10 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
         delete [] vote;
         vote = nullptr;
     }
-	return 0;
+	return resultNode->get_entry_id(resultIndex);
+}
+const char* INDEXPATH = "Btree/";
+void medrank::generateFileName(int id, char* fileName) {
+    sprintf(fileName, "%d.medrank", id);
 }
 
-void medrank::generateFileName(int id, char* fileName) {
-    char c[20];
-    strcpy(fileName, indexPath_);
-    sprintf(c, "%d", id);
-    strcat(fileName, c);
-    strcat(fileName, ".medrank");
-}
