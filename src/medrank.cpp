@@ -18,7 +18,7 @@ medrank::~medrank() {
 //  projected query vector, length = 50
 int medrank::runAlgorithm(LItem* q, char* BTreeFname) {  
     int *vote = new int[60000];
-    memset(vote, 0, 784);        //  初始化为0
+    memset(vote, 0, 60000);        //  初始化为0
     int curLargestVoteNum = 0;   //  记录当前最多票数
     BLeafNode* resultNode = nullptr;//  记录最终结果
     int resultIndex = -1;        //  记录最终结果
