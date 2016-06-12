@@ -309,3 +309,8 @@ int BTree::bulkload(	// bulkload a tree from memory
 
 	return 0; // success to return
 }
+
+void BTree::searchLowerAndHigher(float query, BLeafNode & lower, BLeafNode & higher) {
+	//  TODO
+
+} 

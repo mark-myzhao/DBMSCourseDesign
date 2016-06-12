@@ -5,8 +5,7 @@ class medrank {
 public:
     medrank();
     ~medrank();
-    void init(char* LItemfilePath);
-    void runAlgorithm(int q[50], int result);
+    int runAlgorithm(LItem* q, char* BTreeFname);
 private:
     BTree** btrees_;
 

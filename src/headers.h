@@ -20,6 +20,7 @@
 // Version 1.1.2
 // -----------------------------------------------------------------------------
 #include <stdio.h>
+#include <assert.h>
 #include <errno.h>
 
 #include <iostream>
