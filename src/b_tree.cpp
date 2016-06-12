@@ -322,10 +322,18 @@ void BTree::searchLowerAndHigher(float query,
 			if ((i == entries - 1) || (query < searchRoot->get_key(i + 1))) {	
 				int nextNode = searchRoot->get_son(i);
 				if (searchRoot->get_level() > 1) {
+					if (searchRoot != nullptr) {
+						delete searchRoot;
+						searchRoot = nullptr;
+					}
 					searchRoot = new BIndexNode();
 					searchRoot->init_restore(this, nextNode);
 					break;
 				} else if (searchRoot->get_level() == 1) {
+					if (searchRoot != nullptr) {
+						delete searchRoot;
+						searchRoot = nullptr;
+					}
 					searchRoot = new BLeafNode();
 					searchRoot->init_restore(this, nextNode);
 					break;
@@ -336,6 +344,10 @@ void BTree::searchLowerAndHigher(float query,
 					low = high->get_left_sibling();
 					higherIndex = i;
 					lowerIndex = i - 1;
+					if (searchRoot != nullptr) {
+						delete searchRoot;
+						searchRoot = nullptr;
+					}
 					return;
 				}
 			}
