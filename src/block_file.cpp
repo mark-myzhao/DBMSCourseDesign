@@ -159,7 +159,7 @@ void BlockFile::read_header(		// read remain bytes excluding header
 //  在基本的header（2个int，分别为block的长度和个数）以外储存额外的信息。
 // -----------------------------------------------------------------------------
 void BlockFile::set_header(			// set remain bytes excluding header
-	char* header)						// contain remain bytes
+	char* header)					// contain remain bytes
 {
 									// jump out of first 8 bytes
 	fseek(fp_, BFHEAD_LENGTH, SEEK_SET);

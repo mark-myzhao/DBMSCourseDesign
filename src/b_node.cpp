@@ -42,8 +42,8 @@ void BNode::init(					// init a new node, which not exist
 
 // -----------------------------------------------------------------------------
 void BNode::init_restore(			// load an exist node from disk to init
-	BTree* btree,						// b-tree of this node
-	int block)							// addr of disk for this node
+	BTree* btree,					// b-tree of this node
+	int block)						// addr of disk for this node
 {
 	btree_ = btree;					// init <btree_>
 	block_ = block;					// init <block_>
@@ -248,8 +248,8 @@ void BIndexNode::init(				// init a new node, which not exist
 
 // -----------------------------------------------------------------------------
 void BIndexNode::init_restore(		// load an exist node from disk to init
-	BTree* btree,						// b-tree of this node
-	int block)							// addr of disk for this node
+	BTree* btree,					// b-tree of this node
+	int block)						// addr of disk for this node
 {
 	btree_ = btree;					// init <btree_>
 	block_ = block;					// init <block_>
@@ -282,7 +282,8 @@ void BIndexNode::init_restore(		// load an exist node from disk to init
 	btree_->file_->read_block(blk, block);
 	read_from_buffer(blk);
 
-	delete[] blk; blk = nullptr;
+	delete[] blk; 
+	blk = nullptr;
 }
 
 // -----------------------------------------------------------------------------
@@ -525,7 +526,8 @@ void BLeafNode::init(				// init a new node, which not exist
 
 	char* blk = new char[b_length];	// init <block>
 	block_ = btree_->file_->append_block(blk);
-	delete[] blk; blk = nullptr;
+	delete[] blk; 
+	blk = nullptr;
 }
 
 // -----------------------------------------------------------------------------

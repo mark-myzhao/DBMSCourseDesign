@@ -21,7 +21,7 @@ void countFunc() {
     
     createVectors(randomVectors);
     //each time we read a vector and project it on 50 random vectors
-    for(int i = 0; i < 60000; i++) {
+    for (int i = 0; i < 60000; i++) {
         fscanf(ifile, "%d", &id);
         for(int j = 0; j < 50; j++) {
             result[j] = 0;
@@ -30,7 +30,7 @@ void countFunc() {
         for(int j = 0; j  < 784; j++) {
             fscanf(ifile, "%d", &dimension);
             for(int k = 0; k < 50; k++) { 
-                result[k] += dimension*randomVectors[k][j];
+                result[k] += dimension * randomVectors[k][j];
             }
         }
         for(int j = 0; j < 50; j++) {

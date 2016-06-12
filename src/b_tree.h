@@ -31,8 +31,8 @@ public:
 
 	// -------------------------------------------------------------------------
 	int bulkload(					// bulkload b-tree from hash table in mem
-		LItem* Ltable,			// hash table
-		int n);							// number of entries
+		LItem* Ltable,				// hash table
+		int n);						// number of entries
  
  	//  find the nearest node entry
  	//  lower[lowerIndex] <= query; higher[higherIndex] > query

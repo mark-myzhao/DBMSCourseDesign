@@ -68,12 +68,11 @@ void BTree::init(		// init a new tree
 }
 
 // -----------------------------------------------------------------------------
-void BTree::init_restore(// load the tree from a tree file
-	char* fname) // file name
+void BTree::init_restore(	// load the tree from a tree file
+	char* fname) 			// file name
 {
 	FILE* fp = fopen(fname, "r"); // check whether the file exists
-	if (!fp)
-	{
+	if (!fp) {
 		printf("tree file %s does not exist\n", fname);
 		delete[] fname;
 		fname = nullptr;
@@ -310,7 +309,36 @@ int BTree::bulkload(	// bulkload a tree from memory
 	return 0; // success to return
 }
 
-void BTree::searchLowerAndHigher(float query, BLeafNode & lower, BLeafNode & higher) {
-	//  TODO
-
+void BTree::searchLowerAndHigher(float query,
+							 	 BLeafNode* lower, int & lowerIndex,
+							     BLeafNode* higher, int & higherIndex) {
+	//  You should use init the b+tree before use this method
+	load_root();
+	BNode *searchRoot = root_ptr_;
+	assert(searchRoot != NULL);
+	int entries = searchRoot->get_num_entries();
+	while (true) {
+		for (int i = 0; i < entries; ++i) {
+			if ((i == entries - 1) || (query < searchRoot->get_key(i + 1))) {	
+				int nextNode = searchRoot->get_son(i);
+				if (searchRoot->get_level() > 1) {
+					searchRoot = new BIndexNode();
+					searchRoot->init_restore(this, nextNode);
+					break;
+				} else if (searchRoot->get_level() == 1) {
+					searchRoot = new BLeafNode();
+					searchRoot->init_restore(this, nextNode);
+					break;
+				} else if (searchRoot->get_level() == 0) {
+					BLeafNode *low = nullptr;
+					BLeafNode *high = new BLeafNode();
+					high->init_restore(this, nextNode);
+					low = high->get_left_sibling();
+					higherIndex = i;
+					lowerIndex = i - 1;
+					return;
+				}
+			}
+		}
+	}
 } 
