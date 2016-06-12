@@ -1,10 +1,3 @@
-#include "LItem.h"
-#include "BoxMuller.h"
-#include <iostream>
-#include <cstdio>
-#include <algorithm>
-using namespace std;
-
 //LItem *Litems[50][60000];
 
 // compair function for function sort.
@@ -13,8 +6,8 @@ using namespace std;
 //  return a->getValue() < b->getValue();
 //}
 
-int main() {
-    FILE *ifile = fopen("dataset.txt", "r");
+void countFunc() {
+    FILE *ifile = fopen("../Data/dataset.txt", "r");
     float result[50];               // temp result after projecting
     int id;                         // the id of the vector and it would not be used
     int dimension;                  // the dimensions of the vector read from the file dataset.txt
@@ -22,7 +15,7 @@ int main() {
     FILE *ofile[50];                // pointer to open documents Line0-Line49
     char filename[10];
     for (int i = 0; i < 50; i++) {
-        sprintf(filename, "Line%d", i);
+        sprintf(filename, "../Data/LSets/Line%d", i);
         ofile[i] = fopen(filename, "w");
     }
     
