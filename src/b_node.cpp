@@ -243,7 +243,7 @@ void BIndexNode::init(				// init a new node, which not exist
 	char* blk = new char[b_length];	// init <block_>, get new addr
 	block_ = btree_->file_->append_block(blk);
 	delete[] blk; 
-	blk = NULL;
+	blk = nullptr;
 }
 
 // -----------------------------------------------------------------------------

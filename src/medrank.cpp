@@ -1,18 +1,18 @@
-#include "header.h"
+#include "headers.h"
 
 medrank::medrank() : indexPath_("./Btree") {
-    btrees_ = NULL;
+    btrees_ = nullptr;
 }
 
 medrank::~medrank() {
     for (int i = 0; i < TREENUM; ++i) {
-        if (btrees_ != NULL) {
+        if (btrees_ != nullptr) {
             delete btrees_[i];
-            btrees_[i] = NULL;
+            btrees_[i] = nullptr;
         }
     }
     delete [] btrees_;
-    btrees_ = NULL;
+    btrees_ = nullptr;
 }
 
 //  projected query vector, length = 50
@@ -20,7 +20,7 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
     int *vote = new int[60000];
     memset(vote, 0, 784);        //  初始化为0
     int curLargestVoteNum = 0;   //  记录当前最多票数
-    BLeafNode* resultNode = NULL;//  记录最终结果
+    BLeafNode* resultNode = nullptr;//  记录最终结果
     int resultIndex = -1;        //  记录最终结果
     int lowerIndex[50];          //  记录叶子节点中的位置
     int higherIndex[50];         //
@@ -28,7 +28,7 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
     BLeafNode* higher[50];       //  
     for (int i = 0; i < 50; ++i) {
         lowerIndex[i] = higherIndex[i] = -1;
-        lower[i] = higher[i] = NULL;
+        lower[i] = higher[i] = nullptr;
     }
 
     //  初始化B+树
@@ -37,7 +37,7 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
 
     //  第一次查询
     for (int i = 0; i < 50; ++i) {
-        btree.searchLowerAndHigher(q[i],
+        tree.searchLowerAndHigher(q[i].getValue(),
                                    lower[i], lowerIndex[i],
                                    higher[i], higherIndex[i]);
     }
@@ -46,18 +46,18 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
     while (curLargestVoteNum <= 25) {
         for (int i = 0; i < 50; ++i) {
             bool flag = false;  //  false->left; true->right
-            if (higher[i] == NULL && lower[i] != NULL) {
+            if (higher[i] == nullptr && lower[i] != nullptr) {
                 //  lower[lowerIndex] is nearer
                 flag = false;
-            } else if (higher[i] != NULL && lower[i] == NULL) {
+            } else if (higher[i] != nullptr && lower[i] == nullptr) {
                 //  higher[higherIndex] is nearer
                 flag = true;
-            } else if (higher[i] == NULL && lower[i] == NULL) {
+            } else if (higher[i] == nullptr && lower[i] == nullptr) {
                 //  error
                 bool error = true;
                 assert(error == false);
             } else {
-                if (q[i] - lower[i]->get_key(lowerIndex[i]) < higher[i]->get_key(higherIndex[i])) {
+                if (q[i].getValue() - lower[i]->get_key(lowerIndex[i]) < higher[i]->get_key(higherIndex[i])) {
                     //  lower[lowerIndex] is nearer
                     flag = false;
                 } else {
@@ -79,7 +79,7 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
                 ++higherIndex[i];
                 if (higherIndex[i] >= higher[i]->get_num_keys()) {
                     higher[i] = higher[i]->get_right_sibling();
-                    if (higher[i] != NULL)
+                    if (higher[i] != nullptr)
                         higherIndex[i] = 0;
                 }
             } else {
@@ -88,23 +88,24 @@ int medrank::runAlgorithm(LItem* q, char* BTreeFname) {
                 --lowerIndex[i];
                 if (lowerIndex[i] < 0) {
                     lower[i] = lower[i]->get_left_sibling();
-                    if (lower[i] != NULL)
+                    if (lower[i] != nullptr)
                         lowerIndex[i] = lower[i]->get_num_keys() - 1;
                 }
             }
         }
     }
 
-    if (vote != NULL) {          //  释放内存空间
+    if (vote != nullptr) {          //  释放内存空间
         delete [] vote;
-        vote = NULL;
+        vote = nullptr;
     }
+	return 0;
 }
 
 void medrank::generateFileName(int id, char* fileName) {
     char c[20];
-    strcpy(fname, indexPath_);
+    strcpy(fileName, indexPath_);
     sprintf(c, "%d", id);
-    strcat(fname, c);
-    strcat(fname, ".medrank");
+    strcat(fileName, c);
+    strcat(fileName, ".medrank");
 }

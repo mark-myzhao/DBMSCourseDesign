@@ -299,11 +299,11 @@ int BTree::bulkload(	// bulkload a tree from memory
 	}
 	if (leaf_act_nd != nullptr) {
 		delete leaf_act_nd;
-		leaf_act_nd = NULL;
+		leaf_act_nd = nullptr;
 	}
-	if (leaf_child != NULL) {
+	if (leaf_child != nullptr) {
 		delete leaf_child;
-		leaf_child = NULL;
+		leaf_child = nullptr;
 	}
 
 	return 0; // success to return
@@ -315,12 +315,12 @@ void BTree::searchLowerAndHigher(float query,
 	//  You should use init the b+tree before use this method
 	load_root();
 	BNode *searchRoot = root_ptr_;
-	assert(searchRoot != NULL);
+	assert(searchRoot != nullptr);
 	int entries = searchRoot->get_num_entries();
 	while (true) {
 		for (int i = 0; i < entries; ++i) {
 			if ((i == entries - 1) || (query < searchRoot->get_key(i + 1))) {	
-				int nextNode = searchRoot->get_son(i);
+				int nextNode = dynamic_cast<BIndexNode*>(searchRoot)->get_son(i);
 				if (searchRoot->get_level() > 1) {
 					if (searchRoot != nullptr) {
 						delete searchRoot;

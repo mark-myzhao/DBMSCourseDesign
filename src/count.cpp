@@ -1,10 +1,10 @@
-//LItem *Litems[50][60000];
+#include "headers.h"
+LItem *Litems[50][60000];
 
-// compair function for function sort.
-
-//bool cmp(LItem* a, LItem* b) {
-//  return a->getValue() < b->getValue();
-//}
+// compare function for function sort.
+bool cmp(LItem* a, LItem* b) {
+  return a->getValue() < b->getValue();
+}
 
 void countFunc() {
     FILE *ifile = fopen("../Data/dataset.txt", "r");
@@ -34,8 +34,7 @@ void countFunc() {
             }
         }
         for(int j = 0; j < 50; j++) {
-            //Litems[j][i] = new LItem(id, result[j]);
-            fprintf(ofile[j], "%d %f\n", id, result[j]);
+            Litems[j][i] = new LItem(id, result[j]);
         }
     }
     fclose(ifile);
@@ -43,8 +42,8 @@ void countFunc() {
         fclose(ofile[i]);
     } 
     // sort in memory.
-    /*for (int i = 0; i < 50; i++) {
+    for (int i = 0; i < 50; i++) {
         sort(Litems[i], Litems[i]+60000, cmp);
-    }*/
+    }
     cout << endl;
 }

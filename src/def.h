@@ -1,8 +1,6 @@
 #ifndef _DEF_H_
 #define _DEF_H_
 
-#include <cstdlib>
-#include <cstdio>
 
 // -----------------------------------------------------------------------------
 //  Typedefs
@@ -24,7 +22,7 @@ typedef int POSPOINTER;           //  distinguish int from position pointers
 //  Constants
 // -----------------------------------------------------------------------------
 const float E = 2.7182818F;		// math constants
-const float PI = 3.141592654F;
+const float PI = acos(-1);
 
 const float FLOATZERO = 1e-6F;		// accuracy
 									// max real value

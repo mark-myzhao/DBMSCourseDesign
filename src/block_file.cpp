@@ -1,5 +1,4 @@
-#include "block_file.h"
-#include <cstring>
+#include "headers.h"
 
 // -----------------------------------------------------------------------------
 //  Some points to NOTE:
@@ -34,7 +33,7 @@ BlockFile::BlockFile(				// constructor
 	//  program.
 	//
 	//  "rb+": read or write data from or into binary doc. if the file not 
-	//  exist, it will return NULL.
+	//  exist, it will return nullptr.
 	//  用二进制格式打开文件准备读写
 	// -------------------------------------------------------------------------
 	if ((fp_ = fopen(name, "rb+")) != nullptr) {
