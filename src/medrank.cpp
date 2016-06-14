@@ -102,14 +102,14 @@ int medrank::runAlgorithm(float* q){
         }
     }
 
-//    if (vote != nullptr) {          //  释放内存空间
-//        delete [] vote;
-//        vote = nullptr;
-//    }
+   if (vote != nullptr) {          //  释放内存空间
+       delete [] vote;
+       vote = nullptr;
+   }
 	return resultNode->get_entry_id(resultIndex);
 }
 const char* INDEXPATH = "Btree/";
 void medrank::generateFileName(int id, char* fileName) {
-    sprintf(fileName, "%d.medrank", id);
+    sprintf(fileName, "./%d.medrank", id);
 }
 

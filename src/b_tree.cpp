@@ -78,8 +78,9 @@ void BTree::init_restore(	// load the tree from a tree file
 {
 	FILE* fp = fopen(fname, "r"); // check whether the file exists
 	if (!fp) {
+        perror("fopen failed");
 		printf("tree file %s does not exist\n", fname);
-		delete[] fname;
+		//  delete[] fname;
 		fname = nullptr;
 		error("", true);
 	}

@@ -3,24 +3,31 @@ src/count.cpp src/LItem.cpp src/main.cpp src/medrank.cpp
 
 OBJS=$(SRC:.cpp=.o)
 DEBUG=-g
-CXX=g++ -std=c++11
+CXX=g++ -std=c++11 -g
 
 all: $(OBJS)
 	$(CXX) $(DEBUG) -o medrank $(OBJS)
 
-b_node.o: src/b_node.h
+b_node.o: src/b_node.h src/b_node.cpp
+	$(CXX) $(DEBUG) b_node.cpp
 
-b_tree.o: src/b_tree.h
+b_tree.o: src/b_tree.h src/b_tree.cpp
+	$(CXX) $(DEBUG) b_tree.cpp
 
-block_file.o: block_file.h
+block_file.o: src/block_file.h src/block_file.cpp 
+	$(CXX) $(DEBUG) block_file.cpp
 
-LItem.o: LItem.h
+LItem.o: src/LItem.h src/LItem.cpp
+	$(CXX) $(DEBUG) LItem.cpp
 
-count.o:
+count.o: src/count.cpp
+	$(CXX) $(DEBUG) count.cpp
 
-medrank.o: medrank.h
+medrank.o: src/medrank.h src/medrank.cpp
+	$(CXX) $(DEBUG) medrank.cpp
 
-main.o:
+main.o: src/main.cpp
+	$(CXX) $(DEBUG) main.cpp
 
 clean:
-	-rm $(OBJS) medrank
+	-rm $(OBJS) medrank *.medrank

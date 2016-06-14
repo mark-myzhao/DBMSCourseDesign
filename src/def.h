@@ -60,12 +60,12 @@ const int TREENUM = 50;          //  50 B+ Tree totally
 //  Funuctions
 // -----------------------------------------------------------------------------
 inline void error(							// display an error message
-	char* msg,							// message
+	const char* msg,							// message
 	bool is_exit)						// whether exit
 {
 	char c;
-	printf(msg);
-	scanf("%c", &c);
+	printf("error: %s", msg);
+	//  scanf("%c", &c);
 	if (is_exit) exit(1);
 }
 
