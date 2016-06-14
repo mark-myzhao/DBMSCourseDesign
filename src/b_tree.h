@@ -4,7 +4,6 @@
 
 class BlockFile;
 class BNode;
-class BLeafNode;
 class LItem;
 
 // -----------------------------------------------------------------------------
@@ -37,8 +36,8 @@ public:
  	//  find the nearest node entry
  	//  lower[lowerIndex] <= query; higher[higherIndex] > query
 	void searchLowerAndHigher(float query,
-						 	  BLeafNode* lower, int & lowerIndex,
-						      BLeafNode* higher, int & higherIndex);  
+						 	  BNode* lower, int & lowerIndex,
+						      BNode* higher, int & higherIndex);  
 
 private:
 	// -------------------------------------------------------------------------

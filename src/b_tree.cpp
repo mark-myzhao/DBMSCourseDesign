@@ -148,176 +148,181 @@ int BTree::bulkload(	// bulkload a tree from memory
 	LItem* Ltable, 		// Lj table
 	int n) 				// number of entries
 {
-	BIndexNode* index_child = nullptr;
-	BIndexNode* index_prev_nd = nullptr;
-	BIndexNode* index_act_nd = nullptr;
 
-	BLeafNode* leaf_child = nullptr;
-	BLeafNode* leaf_prev_nd = nullptr;
-	BLeafNode* leaf_act_nd = nullptr;
+//  TODO
 
-	int index = -1;
-	int block = -1;
-	float value = MINREAL;
+// 	BIndexNode* index_child = nullptr;
+// 	BIndexNode* index_prev_nd = nullptr;
+// 	BIndexNode* index_act_nd = nullptr;
 
-	bool first_node = false; 	// determine relationship of sibling
-	int start_block = -1;		// position of first node
-	int end_block = -1;			// position of last node
+// 	BLeafNode* leaf_child = nullptr;
+// 	BLeafNode* leaf_prev_nd = nullptr;
+// 	BLeafNode* leaf_act_nd = nullptr;
 
-	int current_level = -1; 	// current level (leaf level is 0)
-	int last_start_block = -1; 	// to build b-tree level by level
-	int last_end_block = -1; 	// to build b-tree level by level
+// 	int index = -1;
+// 	int block = -1;
+// 	float value = MINREAL;
 
-	// -------------------------------------------------------------------------
-	//  Build leaf node from <LItem table> (level = 0)
-	// -------------------------------------------------------------------------
-	start_block = 0;
-	end_block = 0;
-	first_node = true;
+// 	bool first_node = false; 	// determine relationship of sibling
+// 	int start_block = -1;		// position of first node
+// 	int end_block = -1;			// position of last node
 
-	//  存储level 0数据 建立叶子节点间的双向链表
-	for (int i = 0; i < n; i++) {
-		printf("loading:%d\n", i);
-		index = Ltable[i].getIndex();
-		value = Ltable[i].getValue();
+// 	int current_level = -1; 	// current level (leaf level is 0)
+// 	int last_start_block = -1; 	// to build b-tree level by level
+// 	int last_end_block = -1; 	// to build b-tree level by level
 
-		if (leaf_act_nd == nullptr) {
-			leaf_act_nd = new BLeafNode();
-			leaf_act_nd->init(0, this);      //  level 0, linked to this tree
+// 	// -------------------------------------------------------------------------
+// 	//  Build leaf node from <LItem table> (level = 0)
+// 	// -------------------------------------------------------------------------
+// 	start_block = 0;
+// 	end_block = 0;
+// 	first_node = true;
 
-			if (first_node) {
-				// init <start_block>
-				first_node = false; 
-				start_block = leaf_act_nd->get_block();
-			} else { 
-				// label sibling
-				leaf_act_nd->set_left_sibling(leaf_prev_nd->get_block());
-				leaf_prev_nd->set_right_sibling(leaf_act_nd->get_block());
+// 	//  存储level 0数据 建立叶子节点间的双向链表
+// 	for (int i = 0; i < n; i++) {
+// 		printf("loading:%d\n", i);
+// 		index = Ltable[i].getIndex();
+// 		value = Ltable[i].getValue();
 
-				delete leaf_prev_nd;
-				leaf_prev_nd = nullptr;
-			}
-			end_block = leaf_act_nd->get_block();
-		}     
-		// add new entry
-		leaf_act_nd->add_new_child(index, value);
+// 		if (leaf_act_nd == nullptr) {
+// 			leaf_act_nd = new BLeafNode();
+// 			leaf_act_nd->init(0, this);      //  level 0, linked to this tree
 
-		if (leaf_act_nd->isFull()) {
-			// change next node to store entries
-			leaf_prev_nd = leaf_act_nd;
-			leaf_act_nd = nullptr;
-		}
-	}
-	if (leaf_prev_nd != nullptr) { 
-		// release the space
-		delete leaf_prev_nd;
-		leaf_prev_nd = nullptr;
-	}
-	if (leaf_act_nd != nullptr) {
-		delete leaf_act_nd;
-		leaf_act_nd = nullptr;
-	}
+// 			if (first_node) {
+// 				// init <start_block>
+// 				first_node = false; 
+// 				start_block = leaf_act_nd->get_block();
+// 			} else { 
+// 				// label sibling
+// 				leaf_act_nd->set_left_sibling(leaf_prev_nd->get_block());
+// 				leaf_prev_nd->set_right_sibling(leaf_act_nd->get_block());
 
-	// -------------------------------------------------------------------------
-	//  Stop consition: lastEndBlock == lastStartBlock (only one node, as root)
-	// -------------------------------------------------------------------------
-	current_level = 1;  //  build the b-tree level by level
-	last_start_block = start_block;
-	last_end_block = end_block;
+// 				delete leaf_prev_nd;
+// 				leaf_prev_nd = nullptr;
+// 			}
+// 			end_block = leaf_act_nd->get_block();
+// 		}     
+// 		// add new entry
+// 		leaf_act_nd->add_new_child(index, value);
 
-	//  建立索引节点
-	while (last_end_block > last_start_block) {
-		first_node = true;
-		for (int i = last_start_block; i <= last_end_block; i++) {
-			block = i;
-			// get <block>
-			if (current_level == 1) {
-				leaf_child = new BLeafNode();
-				leaf_child->init_restore(this, block);
-				value = leaf_child->get_key_of_node();
+// 		if (leaf_act_nd->isFull()) {
+// 			// change next node to store entries
+// 			leaf_prev_nd = leaf_act_nd;
+// 			leaf_act_nd = nullptr;
+// 		}
+// 	}
+// 	if (leaf_prev_nd != nullptr) { 
+// 		// release the space
+// 		delete leaf_prev_nd;
+// 		leaf_prev_nd = nullptr;
+// 	}
+// 	if (leaf_act_nd != nullptr) {
+// 		delete leaf_act_nd;
+// 		leaf_act_nd = nullptr;
+// 	}
 
-				delete leaf_child;
-				leaf_child = nullptr;
-			} else {
-				index_child = new BIndexNode();
-				index_child->init_restore(this, block);
-				value = index_child->get_key_of_node();
+// 	// -------------------------------------------------------------------------
+// 	//  Stop consition: lastEndBlock == lastStartBlock (only one node, as root)
+// 	// -------------------------------------------------------------------------
+// 	current_level = 1;  //  build the b-tree level by level
+// 	last_start_block = start_block;
+// 	last_end_block = end_block;
 
-				delete index_child;
-				index_child = nullptr;
-			}
+// 	//  建立索引节点
+// 	while (last_end_block > last_start_block) {
+// 		first_node = true;
+// 		for (int i = last_start_block; i <= last_end_block; i++) {
+// 			block = i;
+// 			// get <block>
+// 			if (current_level == 1) {
+// 				leaf_child = new BLeafNode();
+// 				leaf_child->init_restore(this, block);
+// 				value = leaf_child->get_key_of_node();
 
-			if (!index_act_nd) {
-				index_act_nd = new BIndexNode();
-				index_act_nd->init(current_level, this);
+// 				delete leaf_child;
+// 				leaf_child = nullptr;
+// 			} else {
+// 				index_child = new BIndexNode();
+// 				index_child->init_restore(this, block);
+// 				value = index_child->get_key_of_node();
 
-				if (first_node) {
-					first_node = false;
-					start_block = index_act_nd->get_block();
-				} else {
-					index_act_nd->set_left_sibling(index_prev_nd->get_block());
-					index_prev_nd->set_right_sibling(index_act_nd->get_block());
+// 				delete index_child;
+// 				index_child = nullptr;
+// 			}
 
-					delete index_prev_nd;
-					index_prev_nd = nullptr;
-				}
-				end_block = index_act_nd->get_block();
-			} // add new entry
-			index_act_nd->add_new_child(value, block);
+// 			if (!index_act_nd) {
+// 				index_act_nd = new BIndexNode();
+// 				index_act_nd->init(current_level, this);
 
-			if (index_act_nd->isFull()) {
-				index_prev_nd = index_act_nd;
-				index_act_nd = nullptr;
-			}
-		}
-		if (index_prev_nd != nullptr) {
-			// release the space
-			delete index_prev_nd;
-			index_prev_nd = nullptr;
-		}
-		if (index_act_nd != nullptr) {
-			delete index_act_nd;
-			index_act_nd = nullptr;
-		}
-		// update info
-		last_start_block = start_block;
-		last_end_block = end_block; // build b-tree of higher level
-		current_level++;
-	}
-	root_ = last_start_block; // update the <root>
+// 				if (first_node) {
+// 					first_node = false;
+// 					start_block = index_act_nd->get_block();
+// 				} else {
+// 					index_act_nd->set_left_sibling(index_prev_nd->get_block());
+// 					index_prev_nd->set_right_sibling(index_act_nd->get_block());
 
-	//  释放内存空间
-	if (index_prev_nd != nullptr) {
-		delete index_prev_nd;
-		index_prev_nd = nullptr;
-	}
-	if (index_act_nd != nullptr) {
-		delete index_act_nd;
-		index_act_nd = nullptr;
-	}
-	if (index_child != nullptr) {
-		delete index_child;
-		index_child = nullptr;
-	}
-	if (leaf_prev_nd != nullptr) {
-		delete leaf_prev_nd;
-		leaf_prev_nd = nullptr;
-	}
-	if (leaf_act_nd != nullptr) {
-		delete leaf_act_nd;
-		leaf_act_nd = nullptr;
-	}
-	if (leaf_child != nullptr) {
-		delete leaf_child;
-		leaf_child = nullptr;
-	}
+// 					delete index_prev_nd;
+// 					index_prev_nd = nullptr;
+// 				}
+// 				end_block = index_act_nd->get_block();
+// 			} // add new entry
+// 			index_act_nd->add_new_child(value, block);
+
+// 			if (index_act_nd->isFull()) {
+// 				index_prev_nd = index_act_nd;
+// 				index_act_nd = nullptr;
+// 			}
+// 		}
+// 		if (index_prev_nd != nullptr) {
+// 			// release the space
+// 			delete index_prev_nd;
+// 			index_prev_nd = nullptr;
+// 		}
+// 		if (index_act_nd != nullptr) {
+// 			delete index_act_nd;
+// 			index_act_nd = nullptr;
+// 		}
+// 		// update info
+// 		last_start_block = start_block;
+// 		last_end_block = end_block; // build b-tree of higher level
+// 		current_level++;
+// 	}
+// 	root_ = last_start_block; // update the <root>
+
+// 	//  释放内存空间
+// 	if (index_prev_nd != nullptr) {
+// 		delete index_prev_nd;
+// 		index_prev_nd = nullptr;
+// 	}
+// 	if (index_act_nd != nullptr) {
+// 		delete index_act_nd;
+// 		index_act_nd = nullptr;
+// 	}
+// 	if (index_child != nullptr) {
+// 		delete index_child;
+// 		index_child = nullptr;
+// 	}
+// 	if (leaf_prev_nd != nullptr) {
+// 		delete leaf_prev_nd;
+// 		leaf_prev_nd = nullptr;
+// 	}
+// 	if (leaf_act_nd != nullptr) {
+// 		delete leaf_act_nd;
+// 		leaf_act_nd = nullptr;
+// 	}
+// 	if (leaf_child != nullptr) {
+// 		delete leaf_child;
+// 		leaf_child = nullptr;
+// 	}
 
 	return 0; // success to return
 }
 
+
+//  TODO
 void BTree::searchLowerAndHigher(float query,
-							 	 BLeafNode* lower, int & lowerIndex,
-							     BLeafNode* higher, int & higherIndex) {
+							 	 BNode* lower, int & lowerIndex,
+							     BNode* higher, int & higherIndex) {
 	//  You should use init the b+tree before use this method
 	load_root();
 	BNode *searchRoot = root_ptr_;
@@ -340,12 +345,12 @@ void BTree::searchLowerAndHigher(float query,
 						delete searchRoot;
 						searchRoot = nullptr;
 					}
-					searchRoot = new BLeafNode();
+					searchRoot = new BNode();
 					searchRoot->init_restore(this, nextNode);
 					break;
 				} else if (searchRoot->get_level() == 0) {
-					BLeafNode *low = nullptr;
-					BLeafNode *high = new BLeafNode();
+					BNode *low = nullptr;
+					BNode *high = new BNode();
 					high->init_restore(this, nextNode);
 					low = high->get_left_sibling();
 					higherIndex = i;
