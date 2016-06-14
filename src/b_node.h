@@ -27,10 +27,6 @@ public:
 
     int get_entry_size();               // get entry size in b-node
                                         // find pos just less than input key
-    // void find_position_by_key(
-    //     float key,
-    //     int& low_pos,
-    //     int& high_pos);
 
     float get_key(                      // get <value_> indexed by <index>
         int index);                     // index
@@ -80,7 +76,7 @@ private:
     int    num_entries_;    //  number of entries in this node
     int    left_sibling_;   //  addr in disk for left  sibling
     int    right_sibling_;  //  addr in disk for right sibling
-    float* value_;            //  keys
+    float* value_;          //  keys
     int*   son_;            //  addr of son node or object id
 
     // other params
