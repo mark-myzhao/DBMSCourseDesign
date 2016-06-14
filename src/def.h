@@ -4,6 +4,7 @@
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
+#include <string.h>
 using namespace std;
 // -----------------------------------------------------------------------------
 //  Typedefs
@@ -64,7 +65,7 @@ inline void error(							// display an error message
 	bool is_exit)						// whether exit
 {
 	char c;
-	printf(msg);
+	printf("%s", msg);
 	scanf("%c", &c);
 	if (is_exit) exit(1);
 }

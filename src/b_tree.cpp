@@ -177,11 +177,11 @@ int BTree::bulkload(	// bulkload a tree from memory
 
 	//  存储level 0数据 建立叶子节点间的双向链表
 	for (int i = 0; i < n; i++) {
-		printf("working4:%d\n", i);
+		printf("loading:%d\n", i);
 		index = Ltable[i].getIndex();
 		value = Ltable[i].getValue();
 
-		if (!leaf_act_nd) {
+		if (leaf_act_nd == nullptr) {
 			leaf_act_nd = new BLeafNode();
 			leaf_act_nd->init(0, this);      //  level 0, linked to this tree
 
@@ -221,7 +221,7 @@ int BTree::bulkload(	// bulkload a tree from memory
 	// -------------------------------------------------------------------------
 	//  Stop consition: lastEndBlock == lastStartBlock (only one node, as root)
 	// -------------------------------------------------------------------------
-	current_level = 1; // build the b-tree level by level
+	current_level = 1;  //  build the b-tree level by level
 	last_start_block = start_block;
 	last_end_block = end_block;
 

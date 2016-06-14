@@ -18,9 +18,10 @@ int cmp(const void* a, const void* b) {
   return result < 0 ? -1 : 1;
 }
 
-void generate() {
-    FILE *ifile = fopen("../data/Mnist.ds", "r");
-    FILE *ifile2 = fopen("../data/Mnist.q", "r");
+void generate(char* DB_PATH, char* QUERY_PATH) {
+
+    FILE *ifile = fopen(DB_PATH, "r");
+    FILE *ifile2 = fopen(QUERY_PATH, "r");
     float result[50];               // temp result after projecting
     int id;                         // the id of the vector and it would not be used
     float randomVectors[50][784];

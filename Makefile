@@ -23,4 +23,4 @@ medrank.o: medrank.h
 main.o:
 
 clean:
-	-rm $(OBJS) medrank
+	-rm $(OBJS) medrank *.medrank
