@@ -14,24 +14,24 @@ medrank::~medrank() {
 //  projected query vector, length = 50
 int medrank::runAlgorithm(float* q){  
     int *vote = new int[60000];
-    memset(vote, 0, 60000);        //  初始化为0
+    memset(vote, 0, 60000);      //  初始化为0
     int curLargestVoteNum = 0;   //  记录当前最多票数
-    BLeafNode* resultNode = nullptr;//  记录最终结果
+    BNode* resultNode = nullptr; //  记录最终结果
     int resultIndex = -1;        //  记录最终结果
     int lowerIndex[50];          //  记录叶子节点中的位置
     int higherIndex[50];         //
-    BLeafNode* lower[50];        //  记录叶子节点指针
-    BLeafNode* higher[50];       //  
+    BNode* lower[50];            //  记录叶子节点指针
+    BNode* higher[50];           //  
     for (int i = 0; i < 50; ++i) {
         lowerIndex[i] = higherIndex[i] = -1;
         lower[i] = higher[i] = nullptr;
     }
 
-    //  初始化B+树
+    //  initalize
     BTree trees[50];
 	char BTreeFname[50];
 
-    //  第一次查询
+    //  first query
     for (int i = 0; i < 50; ++i) {
 		generateFileName(i, BTreeFname);
 		trees[i].init_restore(BTreeFname);
@@ -40,7 +40,7 @@ int medrank::runAlgorithm(float* q){
                                    higher[i], higherIndex[i]);
     }
 
-    //  投票过程
+    //  voting
     while (curLargestVoteNum <= 25) {
         for (int i = 0; i < 50; ++i) {
             bool flag = false;  //  false->left; true->right
@@ -65,26 +65,26 @@ int medrank::runAlgorithm(float* q){
 
             if (flag) {
                 //  higher[higherIndex] is nearer
-                vote[higher[i]->get_entry_id(higherIndex[i])]++;
+                vote[higher[i]->get_son(higherIndex[i])]++;
                 //  保存curLagerestNum为当前最大票数,更新结果
-                if (vote[higher[i]->get_entry_id(higherIndex[i])] > curLargestVoteNum) {
-                    curLargestVoteNum = vote[higher[i]->get_entry_id(higherIndex[i])];
+                if (vote[higher[i]->get_son(higherIndex[i])] > curLargestVoteNum) {
+                    curLargestVoteNum = vote[higher[i]->get_son(higherIndex[i])];
                     resultNode = higher[i];
                     resultIndex = higherIndex[i];
                 }
 
                 ++higherIndex[i];
-                if (higherIndex[i] >= higher[i]->get_num_keys()) {
+                if (higherIndex[i] >= higher[i]->get_num_entries()) {
                     higher[i] = higher[i]->get_right_sibling();
                     if (higher[i] != nullptr)
                         higherIndex[i] = 0;
                 }
             } else {
                 //  lower[lowerIndex] is nearer
-                vote[lower[i]->get_entry_id(lowerIndex[i])]++;
+                vote[lower[i]->get_son(lowerIndex[i])]++;
 				//  保存curLagerestNum为当前最大票数,更新结果
-				if (vote[lower[i]->get_entry_id(lowerIndex[i])] > curLargestVoteNum) {
-					curLargestVoteNum = vote[lower[i]->get_entry_id(lowerIndex[i])];
+				if (vote[lower[i]->get_son(lowerIndex[i])] > curLargestVoteNum) {
+					curLargestVoteNum = vote[lower[i]->get_son(lowerIndex[i])];
 					resultNode = lower[i];
 					resultIndex = lowerIndex[i];
 				}
@@ -92,7 +92,7 @@ int medrank::runAlgorithm(float* q){
                 if (lowerIndex[i] < 0) {
                     lower[i] = lower[i]->get_left_sibling();
                     if (lower[i] != nullptr)
-                        lowerIndex[i] = lower[i]->get_num_keys() - 1;
+                        lowerIndex[i] = lower[i]->get_num_entries() - 1;
                 }
             }
         }
@@ -102,9 +102,10 @@ int medrank::runAlgorithm(float* q){
         delete [] vote;
         vote = nullptr;
     }
-	return resultNode->get_entry_id(resultIndex);
+	return resultNode->get_son(resultIndex);
 }
 const char* INDEXPATH = "Btree/";
+
 void medrank::generateFileName(int id, char* fileName) {
     sprintf(fileName, "%d.medrank", id);
 }

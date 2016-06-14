@@ -25,15 +25,15 @@ public:
     void write_to_buffer(   // write a b-node into buffer
         char* buf);                     // store info of a b-node
 
-    int get_entry_size();               // get entry size in b-node
+    int get_entry_size() const;         // get entry size in b-node
                                         // find pos just less than input key
 
     float get_key(                      // get <value_> indexed by <index>
-        int index);                     // index
+        int index) const;               // index
 
-    BLeafNode* get_left_sibling();
+    BNode* get_left_sibling() const;
                                         // get right sibling node
-    BLeafNode* get_right_sibling();
+    BNode* get_right_sibling() const;
 
     int get_block() const;
 
@@ -47,22 +47,24 @@ public:
 
     bool isFull() const;                 // whether is full?
 
-    int get_key_size(                    // get key size of this node
-        int block_length);               // block length
+    // int get_key_size(                    // get key size of this node
+    //     int block_length) const;         // block length
 
-    int get_increment();             // get <increment>
+    // int get_num_keys() const;               // get <num_keys_>
 
-    int get_num_keys() const;               // get <num_keys_>
-
-    int get_entry_id(                // get entry id indexed by <index>
+    float get_index(                // get entry id indexed by <index>
         int index) const;                   // index
 
     int get_son(                     // get <son_> indexed by <index>
         int index) const;                       // index
 
-    void add_new_child(              // add new child by input id and key
-        int id,                         // input object id
-        float key);                     // input key
+    // void add_new_child(              // add new child by input id and key
+    //     int id,                         // input object id
+    //     float key);                     // input key
+
+    void add_new_child(
+        float key,
+        int son);
 
     void set_left_sibling(           // set <left_sibling>
         int left_sibling);              // addr of left sibling node

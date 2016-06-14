@@ -194,7 +194,7 @@ int BTree::bulkload(    // bulkload a tree from memory
             end_block = leaf_act_nd->get_block();
         }     
         // add new entry
-        leaf_act_nd->add_new_child(index, value);
+        leaf_act_nd->add_new_child(value, index);
 
         if (leaf_act_nd->isFull()) {
             // change next node to store entries
@@ -260,7 +260,8 @@ int BTree::bulkload(    // bulkload a tree from memory
                     index_prev_nd = nullptr;
                 }
                 end_block = index_act_nd->get_block();
-            }   // add new entry
+            }   
+            // add new entry
             index_act_nd->add_new_child(value, block);
 
             if (index_act_nd->isFull()) {
@@ -344,7 +345,7 @@ void BTree::searchLowerAndHigher(float query,
                         if (low == nullptr) {
                             lowerIndex = -1;
                         } else {
-                            lowerIndex = low->get_num_entries - 1;
+                            lowerIndex = low->get_num_entries() - 1;
                         }
                     }
                     if (searchRoot != nullptr) {

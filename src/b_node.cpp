@@ -59,7 +59,7 @@ void BNode::init(                   // init a new node, which contains no entry
 
     if (capacity_ < 50) {           // ensure at least 50 entries
         printf("capacity = %d\n", capacity_);
-        error("BIndexNode::init() capacity too small.\n", true);
+        error("BNode::init() capacity too small.\n", true);
     }
 
     value_ = new float[capacity_];  // init <value_>
@@ -93,7 +93,7 @@ void BNode::init_restore(           // load an exist node from disk to init
     capacity_ = (b_len - get_header_size()) / get_entry_size();
     if (capacity_ < 50) {           // at least 50 entries
         printf("capacity = %d\n", capacity_);
-        error("BIndexNode::init_restore capacity too small.\n", true);
+        error("BNode::init_restore capacity too small.\n", true);
     }
 
     value_ = new float[capacity_];  // init <value_>
@@ -115,7 +115,7 @@ void BNode::init_restore(           // load an exist node from disk to init
     blk = nullptr;
 }
 
-int BNode::get_entry_size()         // get entry size of b-node
+int BNode::get_entry_size() const   // get entry size of b-node
 {
     int entry_size = SIZEFLOAT + SIZEINT;
     return entry_size;
@@ -175,50 +175,30 @@ void BNode::write_to_buffer(
     }
 }
 
-// void BNode::find_position_by_key(   // find pos just less than input key
-//     float key,
-//     int& low_pos,
-//     int& high_pos)
-// {                   
-//     for (int i = num_entries_ - 1; i >= 0; i--) {
-//         if (value_[i] <= key) {
-//             high_pos = i;
-//             break;
-//         }
-//     }
-//     for (low_pos = high_pos; low_pos < num_entries_; ++low_pos)
-//     {
-//         if (value_[low_pos] >= key)
-//         {
-//             break;
-//         }
-//     }   
-// }
-
 float BNode::get_key(               // get <key> indexed by <index>
-    int index)                          // input <index>
+    int index) const                    // input <index>
 {
     if (index < 0 || index >= num_entries_) {
-        error("BIndexNode::get_key out of range.", true);
+        error("BNode::get_key out of range.", true);
     }
     return value_[index];
 }
 
-BNode* BNode::get_left_sibling()    // get the left-sibling node
+BNode* BNode::get_left_sibling() const // get the left-sibling node
 {
-    BIndexNode* node = nullptr;
+    BNode* node = nullptr;
     if (left_sibling_ != -1) {      // left sibling node exist
-        node = new BIndexNode();    // read left-sibling from disk
+        node = new BNode();    // read left-sibling from disk
         node->init_restore(btree_, left_sibling_);
     }
     return node;
 }
 
-BNode* BNode::get_right_sibling()   // get the right-sibling node
+BNode* BNode::get_right_sibling() const // get the right-sibling node
 {
-    BIndexNode* node = nullptr;
+    BNode* node = nullptr;
     if (right_sibling_ != -1) {     // right sibling node exist
-        node = new BIndexNode();    // read right-sibling from disk
+        node = new BNode();    // read right-sibling from disk
         node->init_restore(btree_, right_sibling_);
     }
     return node;
@@ -228,7 +208,7 @@ int BNode::get_son(         // get son indexed by <index>
     int index) const        // input index
 {
     if (index < 0 || index >= num_entries_) {
-        error("BIndexNode::get_son out of range.", true);
+        error("BNode::get_son out of range.", true);
     }
     return son_[index];
 }
@@ -238,7 +218,7 @@ void BNode::add_new_child(      // add a new entry from its child node
     int son)                            // input son
 {
     if (num_entries_ >= capacity_) {
-        error("BIndexNode::add_new_child overflow", true);
+        error("BNode::add_new_entry overflow", true);
     }
 
     value_[num_entries_] = key;     // add new entry into its pos
@@ -265,7 +245,7 @@ int BNode::get_level() const // get <level_>
 
 //  <level>: SIZECHAR
 //  <num_entries> <left_sibling> and <right_sibling>: SIZEINT
-int BNode::get_header_size()        // get header size of b-node
+int BNode::get_header_size()   // get header size of b-node
 {
     return SIZECHAR + SIZEINT * 3;
 }
@@ -278,6 +258,12 @@ float BNode::get_key_of_node() const  // get key of this node
 bool BNode::isFull() const {
     return num_entries_>= capacity_;
 }
+
+float BNode::get_index(int index) const {
+    return value_[index];
+}
+
+
 
 void BNode::set_left_sibling(       // set addr of left sibling node
     int left_sibling)                   // addr of left sibling node
