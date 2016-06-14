@@ -37,8 +37,8 @@ public:
  	//  find the nearest node entry
  	//  lower[lowerIndex] <= query; higher[higherIndex] > query
 	void searchLowerAndHigher(float query,
-						 	  BLeafNode* lower, int & lowerIndex,
-						      BLeafNode* higher, int & higherIndex);  
+						 	  BLeafNode* & lower, int & lowerIndex,
+						      BLeafNode* & higher, int & higherIndex);  
 
 private:
 	// -------------------------------------------------------------------------

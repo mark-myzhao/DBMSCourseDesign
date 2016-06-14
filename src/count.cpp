@@ -26,12 +26,11 @@ void generate() {
     float randomVectors[50][784];
 
     createVectors(randomVectors);
-	printf("random finished!\n");
     //each time we read a vector and project it on 50 random vectors
     for (int i = 0; i < 60000; i++) {
         fscanf(ifile, "%d", &id);
 		if (i % 1000 == 0)
-			printf("working:%d\n", i);
+			printf("projecting:%d\n", i);
 		for(int j = 0; j < 50; j++) {
             result[j] = 0;
         }
@@ -47,10 +46,10 @@ void generate() {
     }
 	for (int i = 0; i < 100; i++) {
 		fscanf(ifile2, "%d", &id);
-		printf("working2:%d\n", i);
 		for (int j = 0; j < 784; j++) {
 			fscanf(ifile2, "%d", &queries[i][j]);
 			for (int k = 0; k < 50; k++) {
+				// q[i]在a[k]上的投影
 				q[i][k] += queries[i][j] * randomVectors[k][j];
 			}
 		}
@@ -59,7 +58,6 @@ void generate() {
     fclose(ifile2);
     // sort in memory.
     for (int i = 0; i < 50; i++) {
-		printf("working3:%d\n", i);
 		qsort(Litems[i], 60000, sizeof(Litems[i][0]), cmp);
     }
 }
@@ -81,16 +79,27 @@ float uniform_fun() {
 	return C;
 }
 
+void normalize(float arr[][784], int n) {
+	double length = 0;
+	for (int i = 0; i < 784; ++i) {
+		length += pow(arr[n][i], 2);
+	}
+	length = sqrt(length);
+	for (int i = 0; i < 784; ++i) {
+		arr[n][i] /= length;
+	}
+}
 
-void createVectors(float a[][784]) {
+void createVectors(float arr[][784]) {
 	srand(static_cast<unsigned>(time(nullptr)));
 	for (int i = 0; i < 50; i++) {
 		for (int j = 0; j < 784; j++) {
-			a[i][j] = uniform_fun();
-			while (a[i][j] < std::numeric_limits<int>::min() || a[i][j] > std::numeric_limits<int>::max()) {
-				a[i][j] = uniform_fun();
+			arr[i][j] = uniform_fun();
+			while (arr[i][j] < std::numeric_limits<float>::min() || arr[i][j] > std::numeric_limits<float>::max()) {
+				arr[i][j] = uniform_fun();
 			}
 		}
+		normalize(arr, i);;
 	}
 }
 

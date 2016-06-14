@@ -28,20 +28,23 @@ int medrank::runAlgorithm(float* q){
     }
 
     //  初始化B+树
-    BTree trees[50];
+    BTree* tree;
 	char BTreeFname[50];
 
     //  第一次查询
     for (int i = 0; i < 50; ++i) {
 		generateFileName(i, BTreeFname);
-		trees[i].init_restore(BTreeFname);
-		trees[i].searchLowerAndHigher(q[i],
+		tree = new BTree;
+		tree->init_restore(BTreeFname);
+		tree->searchLowerAndHigher(q[i],
                                    lower[i], lowerIndex[i],
                                    higher[i], higherIndex[i]);
+		printf("search:%d\n", i);
     }
 
     //  投票过程
     while (curLargestVoteNum <= 25) {
+		// printf("current:%d\n", curLargestVoteNum);
         for (int i = 0; i < 50; ++i) {
             bool flag = false;  //  false->left; true->right
             if (higher[i] == nullptr && lower[i] != nullptr) {
@@ -54,7 +57,7 @@ int medrank::runAlgorithm(float* q){
                 //  error
 				error("higher == NULL and lower  == NULL", true);
             } else {
-                if (q[i] - lower[i]->get_key(lowerIndex[i]) < higher[i]->get_key(higherIndex[i])) {
+                if (q[i] - lower[i]->get_key(lowerIndex[i]) < higher[i]->get_key(higherIndex[i]) - q[i]) {
                     //  lower[lowerIndex] is nearer
                     flag = false;
                 } else {
@@ -65,26 +68,27 @@ int medrank::runAlgorithm(float* q){
 
             if (flag) {
                 //  higher[higherIndex] is nearer
-                vote[higher[i]->get_entry_id(higherIndex[i])]++;
+				int index = higher[i]->get_entry_id(higherIndex[i]);
+                vote[index]++;
                 //  保存curLagerestNum为当前最大票数,更新结果
-                if (vote[higher[i]->get_entry_id(higherIndex[i])] > curLargestVoteNum) {
-                    curLargestVoteNum = vote[higher[i]->get_entry_id(higherIndex[i])];
+                if (vote[index] > curLargestVoteNum) {
+                    curLargestVoteNum = vote[index];
                     resultNode = higher[i];
                     resultIndex = higherIndex[i];
                 }
-
                 ++higherIndex[i];
-                if (higherIndex[i] >= higher[i]->get_num_keys()) {
+                if (higherIndex[i] >= higher[i]->get_num_entries()) {
                     higher[i] = higher[i]->get_right_sibling();
                     if (higher[i] != nullptr)
                         higherIndex[i] = 0;
                 }
             } else {
                 //  lower[lowerIndex] is nearer
-                vote[lower[i]->get_entry_id(lowerIndex[i])]++;
+				int index = lower[i]->get_entry_id(lowerIndex[i]);
+                vote[index]++;
 				//  保存curLagerestNum为当前最大票数,更新结果
-				if (vote[lower[i]->get_entry_id(lowerIndex[i])] > curLargestVoteNum) {
-					curLargestVoteNum = vote[lower[i]->get_entry_id(lowerIndex[i])];
+				if (vote[index] > curLargestVoteNum) {
+					curLargestVoteNum = vote[index];
 					resultNode = lower[i];
 					resultIndex = lowerIndex[i];
 				}
@@ -92,16 +96,16 @@ int medrank::runAlgorithm(float* q){
                 if (lowerIndex[i] < 0) {
                     lower[i] = lower[i]->get_left_sibling();
                     if (lower[i] != nullptr)
-                        lowerIndex[i] = lower[i]->get_num_keys() - 1;
+                        lowerIndex[i] = lower[i]->get_num_entries() - 1;
                 }
             }
         }
     }
 
-    if (vote != nullptr) {          //  释放内存空间
-        delete [] vote;
-        vote = nullptr;
-    }
+//    if (vote != nullptr) {          //  释放内存空间
+//        delete [] vote;
+//        vote = nullptr;
+//    }
 	return resultNode->get_entry_id(resultIndex);
 }
 const char* INDEXPATH = "Btree/";
