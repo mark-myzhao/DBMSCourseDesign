@@ -5,10 +5,7 @@
 #include <cstring>
 
 extern int nSize;  // 60000
-extern int dSize;  // 784
-extern int queryNum;  // 100
-extern char datasetPath[50];
-extern char queryPath[50];
+extern int randomSize;  // 50
 
 medrank::medrank() {
 
@@ -19,28 +16,28 @@ medrank::~medrank() {
 
 //  projected query vector, length = 50
 int medrank::runAlgorithm(float* q){  
-    int *vote = new int[nSize + 1];
-    for (int i = 0; i < nSize + 1; ++i) {
+    int *vote = new int[nSize];
+    for (int i = 0; i < nSize; ++i) {
         vote[i] = 0;
     }
     int curLargestVoteNum = 0;   //  记录当前最多票数
     BLeafNode* resultNode = nullptr;//  记录最终结果
     int resultIndex = -1;        //  记录最终结果
-    int lowerIndex[50];          //  记录叶子节点中的位置
-    int higherIndex[50];         //
-    BLeafNode* lower[50];        //  记录叶子节点指针
-    BLeafNode* higher[50];       //  
-    for (int i = 0; i < 50; ++i) {
+    int lowerIndex[randomSize];          //  记录叶子节点中的位置
+    int higherIndex[randomSize];         //
+    BLeafNode* lower[randomSize];        //  记录叶子节点指针
+    BLeafNode* higher[randomSize];       //  
+    for (int i = 0; i < randomSize; ++i) {
         lowerIndex[i] = higherIndex[i] = -1;
         lower[i] = higher[i] = nullptr;
     }
 
     //  初始化B+树
-    BTree* tree[50];
-    char BTreeFname[50];
+    BTree* tree[randomSize];
+    char BTreeFname[randomSize];
 
     //  第一次查询
-    for (int i = 0; i < 50; ++i) {
+    for (int i = 0; i < randomSize; ++i) {
         generateFileName(i, BTreeFname);
 	    tree[i] = new BTree;
 		tree[i]->init_restore(BTreeFname);
@@ -50,9 +47,9 @@ int medrank::runAlgorithm(float* q){
 
     }
     //  投票过程
-    while (curLargestVoteNum <= 25) {
+    while (curLargestVoteNum <= randomSize * 0.5) {
 		// printf("current:%d\n", curLargestVoteNum);
-        for (int i = 0; i < 50; ++i) {
+        for (int i = 0; i < randomSize; ++i) {
             bool flag = false;  //  false->left; true->right
             if (higher[i] == nullptr && lower[i] != nullptr) {
                 //  lower[lowerIndex] is nearer
@@ -82,7 +79,7 @@ int medrank::runAlgorithm(float* q){
                 if (vote[index] > curLargestVoteNum) {
                     curLargestVoteNum = vote[index];
                 }
-                if (curLargestVoteNum > 25) {
+                if (curLargestVoteNum > randomSize * 0.5) {
                     resultNode = higher[i];
                     resultIndex = higherIndex[i];
                     break;
@@ -104,7 +101,7 @@ int medrank::runAlgorithm(float* q){
 				if (vote[index] > curLargestVoteNum) {
 					curLargestVoteNum = vote[index];
                 }
-                if (curLargestVoteNum > 25) {
+                if (curLargestVoteNum > randomSize * 0.5) {
 					resultNode = lower[i];
 					resultIndex = lowerIndex[i];
                     break;
@@ -127,7 +124,7 @@ int medrank::runAlgorithm(float* q){
        vote = nullptr;
     }
 
-    for (int i = 0; i < 50; ++i) {
+    for (int i = 0; i < randomSize; ++i) {
         delete tree[i];
     }
 

@@ -26,7 +26,6 @@ public:
 		int b_length);					// length of a block
 
 	~BlockFile();					// destructor
-
 									// -------------------------------------------------------------------------
 									// write <bytes> of length <num>
 	void put_bytes(char* bytes, int num)

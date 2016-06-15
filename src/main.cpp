@@ -11,20 +11,22 @@
 #include <stdlib.h>
 #include <string.h>
 
-float result[100];
-
 class Litem;
 
-// int **a;
-int a[60000][784];
-LItem Litems[50][60000];
-float q[100][50];
-int queries[100][784];
+int **a;
+// int a[60000][784];
+LItem **Litems;
+// LItem Litems[50][60000];
+float **q;
+// float q[100][50];
+int **queries;
+// int queries[100][784];
 
 //  main Args
 int nSize = 0;  // 60000
 int dSize = 0;  // 784
 int queryNum = 0;  // 100
+int randomSize = 50;
 char datasetPath[50];
 char queryPath[50];
 
@@ -41,21 +43,46 @@ void generate();
 
 void parseArgs(int argc, char** argv);
 
-// void createArray() {
-//     a = new int*[dSize];
-//     for (int i = 0; i < dSize; ++i)
-//         a[i] = new int[nSize];
-// }
-// void deleteArray() {
-//     for (int i = 0; i < dSize; ++i)
-//         delete[] a[i];
-//     delete[] a;
-// }
+void createArray() {
+    a = new int*[nSize];
+    for (int i = 0; i < nSize; ++i)
+        a[i] = new int[dSize];
+
+    Litems = new LItem*[randomSize];
+    for (int i = 0; i < randomSize; ++i)
+        Litems[i] = new LItem[nSize];
+
+    q = new float*[queryNum];
+    for (int i = 0; i < queryNum; ++i)
+        q[i] = new float[randomSize];
+
+    queries = new int*[queryNum];
+    for (int i = 0; i < queryNum; ++i)
+        queries[i] = new int[dSize];
+}
+
+void deleteArray() {
+    for (int i = 0; i < nSize; ++i)
+        delete[] a[i];
+    delete[] a;
+
+    for (int i = 0; i < randomSize; ++i)
+        delete[] Litems[i];
+    delete[] Litems;
+
+    for (int i = 0; i < queryNum; ++i)
+        delete[] q[i];
+    delete[] q;
+
+    for (int i = 0; i < queryNum; ++i)
+        delete[] queries[i];
+    delete[] queries;
+}
 
 int main(int argc, char** argv) {
-    time_t beginTime = clock(), endTime, startTime, finishTime, totalTime = 0;
+    time_t startTime, finishTime, totalTime = 0;
     parseArgs(argc, argv);
-    // createArray();
+    createArray();
     BTree* tree;
     medrank solution;
     generate();
@@ -64,7 +91,7 @@ int main(int argc, char** argv) {
     int ans[queryNum];
     
     startTime = clock();
-    for (int i = 0; i < 50; ++i) {
+    for (int i = 0; i < randomSize; ++i) {
         solution.generateFileName(i, fileName);
 	    tree = new BTree;
         tree->init(fileName, BLOCKLENGTH);
@@ -75,9 +102,10 @@ int main(int argc, char** argv) {
     printf("bulkload finished!\n");
     printf("Indexing Time: %.4fs\n", (float)(finishTime - startTime) / CLOCKS_PER_SEC);
     FILE* absFileRead = fopen("./data/nearest.txt", "r");
-    float resultRatio = 0;
+    float resultRatio = 0, result[queryNum];
     for (int i = 0; i < queryNum; ++i) {
 		// printf("run start:%d\n", i);
+        result[i] = 0;
         startTime = clock();
         ans[i] = solution.runAlgorithm(q[i]);
         finishTime = clock();
@@ -95,9 +123,7 @@ int main(int argc, char** argv) {
     printf("Average Running Time: %.4fs\n", (float)totalTime / queryNum / CLOCKS_PER_SEC);
     resultRatio /= queryNum;
     printf("------Overall Ratio: %f------\n", resultRatio);
-    // deleteArray();
-    endTime = clock();
-    // printf("Average Running Time: %dms\n", finishTime - startTime);
+    deleteArray();
     return 0;
 }
 
@@ -115,27 +141,17 @@ void parseArgs(int argc, char** argv) {
     };  
  
    while ( (opt = getopt_long_only(argc, argv, optstring, long_options, &option_index)) != -1) {  
-        //printf("%c\n", opt);
         if (opt == 'n') {
             nSize = stringToInt((char*) optarg);
-            // printf("%d\n", nSize);
         } else if (opt == 'd') {
             dSize = stringToInt((char*) optarg);
-            // printf("%d\n", dSize);
         } else if (opt == '1') {
             queryNum = stringToInt((char*) optarg);
-            // printf("%d\n", queryNum);
         } else if (opt == '2') {
             strcpy(datasetPath, (char*) optarg);
-            // printf("%s\n", datasetPath);
         } else if (opt == '3') {
             strcpy(queryPath, (char*) optarg);
-            // printf("%s\n", queryPath);
-        } else {
-            // do nothing
         }
-    //printf("optarg = %s\n", (char*) optarg);  
     }  
-    // getchar();
 }
 
