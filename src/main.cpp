@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <getopt.h>
 #include <math.h>
+#include <time.h>
+#include <stdlib.h>
 
 float result[100];
 
@@ -40,19 +42,19 @@ int main(int argc, char** argv) {
         printf("bulkload finish:%d\n", i);
 	    delete tree;
 
-        printf("----------\nprint tree\n");
-        tree = new BTree;
-        tree->init_restore(fileName);
-        BLeafNode* look = new BLeafNode;
-        look->init_restore(tree, 1);
-        // while (look->get_right_sibling() != nullptr) {
-            for (int k = 0; k < 50; ++k) {
-                printf("(%d, %.4f) ", look->get_entry_id(k), look->get_key(k));
-            }
-            //look = look->get_right_sibling();
-        // }
-        printf("print tree end\n----------\n");
-        getchar();
+        // printf("----------\nprint tree\n");
+        // tree = new BTree;
+        // tree->init_restore(fileName);
+        // BLeafNode* look = new BLeafNode;
+        // look->init_restore(tree, 1);
+        // // while (look->get_right_sibling() != nullptr) {
+        //     for (int k = 0; k < 50; ++k) {
+        //         printf("(%d, %.4f) ", look->get_entry_id(k), look->get_key(k));
+        //     }
+        //     //look = look->get_right_sibling();
+        // // }
+        // printf("print tree end\n----------\n");
+        // getchar();
     }
 
     FILE* absFileRead = fopen("./data/nearest.txt", "r");
@@ -60,15 +62,15 @@ int main(int argc, char** argv) {
     for (int i = 0; i < 100; ++i) {
 		printf("run start:%d\n", i);
         ans[i] = solution.runAlgorithm(q[i]) - 1;
+        // ans[i] = rand() % 60000;
         for (int j = 0; j < 784; ++j) {
-            result[i] += (queries[i][j] - a[ans[i]][j]) * (queries[i][j] - a[ans[i]][j]);
+            result[i] += pow((queries[i][j] - a[ans[i]][j]),2);
         }
 
         result[i] = sqrt(result[i]);
-        printf("Medrank Result: %lf\n", result[i]);
-
         float tmp = 0;
         fscanf(absFileRead, "%f", &tmp);
+        printf("Medrank Result: %f, real: %f\n", result[i], tmp);
         resultRatio += (result[i] / tmp); 
     }
 

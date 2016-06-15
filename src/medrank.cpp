@@ -13,8 +13,11 @@ medrank::~medrank() {
 
 //  projected query vector, length = 50
 int medrank::runAlgorithm(float* q){  
-    int *vote = new int[60000];
-    memset(vote, 0, 60000);        //  初始化为0
+    int *vote = new int[60001];
+    //  memset(vote, 0, sizeof(vote));        //  初始化为0
+    for (int i = 0; i < 60001; ++i) {
+        vote[i] = 0;
+    }
     int curLargestVoteNum = 0;   //  记录当前最多票数
     BLeafNode* resultNode = nullptr;//  记录最终结果
     int resultIndex = -1;        //  记录最终结果
@@ -39,12 +42,12 @@ int medrank::runAlgorithm(float* q){
 		tree[i]->searchLowerAndHigher(q[i],
                                    lower[i], lowerIndex[i],
                                    higher[i], higherIndex[i]);
-		printf("search:%d\n", i);
-        if (lower[i] && higher[i]) {
-            printf("query: %.4f; lowerKey: %.4f; higherKey %.4f\n", q[i], lower[i]->get_key(lowerIndex[i]), higher[i]->get_key(higherIndex[i]));
-            printf("Index: %d %d\n", lowerIndex[i], higherIndex[i]);
-            printf("Blocks: %d %d\n", lower[i]->get_block(), higher[i]->get_block());
-        }
+		// printf("search:%d\n", i);
+        // if (lower[i] && higher[i]) {
+        //     printf("query: %.4f; lowerKey: %.4f; higherKey %.4f\n", q[i], lower[i]->get_key(lowerIndex[i]), higher[i]->get_key(higherIndex[i]));
+        //     printf("Index: %d %d\n", lowerIndex[i], higherIndex[i]);
+        //     printf("Blocks: %d %d\n", lower[i]->get_block(), higher[i]->get_block());
+        // }
 
         // printf("----------\nprint tree\n");
         // BLeafNode* look = new BLeafNode();
@@ -57,8 +60,14 @@ int medrank::runAlgorithm(float* q){
         // }
         // printf("print tree end\n----------\n");
     }
-
+    for (int i = 0; i < 60001; ++i) {
+        if (vote[i] != 0) {
+            printf("FUCK DB\n");
+            getchar();
+        }
+    }
     //  投票过程
+    int count = 0, lastNum = -1;
     while (curLargestVoteNum <= 25) {
 		// printf("current:%d\n", curLargestVoteNum);
         for (int i = 0; i < 50; ++i) {
@@ -85,13 +94,19 @@ int medrank::runAlgorithm(float* q){
             if (flag) {
                 //  higher[higherIndex] is nearer
 				int index = higher[i]->get_entry_id(higherIndex[i]);
+                //printf("%d\n", index);
                 vote[index]++;
                 //  保存curLagerestNum为当前最大票数,更新结果
                 if (vote[index] > curLargestVoteNum) {
                     curLargestVoteNum = vote[index];
+                }
+                if (curLargestVoteNum > 25) {
                     resultNode = higher[i];
                     resultIndex = higherIndex[i];
+                    break;
                 }
+                //if (i == 0)
+                //    printf("qi:%.4f, select:%.4f\n", q[i], higher[i]->get_key(higherIndex[i]));
                 ++higherIndex[i];
                 if (higherIndex[i] >= higher[i]->get_num_entries()) {
                     higher[i] = higher[i]->get_right_sibling();
@@ -101,13 +116,19 @@ int medrank::runAlgorithm(float* q){
             } else {
                 //  lower[lowerIndex] is nearer
 				int index = lower[i]->get_entry_id(lowerIndex[i]);
+                //printf("%d\n", index);
                 vote[index]++;
 				//  保存curLagerestNum为当前最大票数,更新结果
 				if (vote[index] > curLargestVoteNum) {
 					curLargestVoteNum = vote[index];
+                }
+                if (curLargestVoteNum > 25) {
 					resultNode = lower[i];
 					resultIndex = lowerIndex[i];
-				}
+                    break;
+                }
+                //if (i == 0)
+                //    printf("qi:%.4f, select:%.4f\n", q[i], lower[i]->get_key(lowerIndex[i]));
                 --lowerIndex[i];
                 if (lowerIndex[i] < 0) {
                     lower[i] = lower[i]->get_left_sibling();
@@ -115,9 +136,14 @@ int medrank::runAlgorithm(float* q){
                         lowerIndex[i] = lower[i]->get_num_entries() - 1;
                 }
             }
+            ++count;
+            if (lastNum < curLargestVoteNum) {
+                lastNum = curLargestVoteNum;
+                printf("num: %d, count: %d\n", lastNum, count);
+            }
         }
     }
-
+    printf("[Break Loop] num: %d, count: %d\n", curLargestVoteNum, count);
     int returnResult = resultNode->get_entry_id(resultIndex);
 
     if (vote != nullptr) {          //  释放内存空间

@@ -10,7 +10,7 @@ extern int a[60000][784];
 extern LItem Litems[50][60000];
 extern float q[100][50];
 extern int queries[100][784];
-extern void createVectors(float a[][784]);
+void createVectors(float a[][784]);
 
 // compare function for function sort.
 int cmp(const void* a, const void* b) {
@@ -64,12 +64,8 @@ void generate() {
 
 //  From BoxMuller.cpp
 float uniform() {
-	int x;
-	float y;
-	x = rand();
-	y = static_cast<float>(x % 100);
-	y = y / 100;
-	return y;
+	int x = rand();
+	return (float)x / RAND_MAX;
 }
 
 float uniform_fun() {
@@ -95,12 +91,10 @@ void createVectors(float arr[][784]) {
 	for (int i = 0; i < 50; i++) {
 		for (int j = 0; j < 784; j++) {
 			arr[i][j] = uniform_fun();
-			while (arr[i][j] < std::numeric_limits<float>::min() || arr[i][j] > std::numeric_limits<float>::max()) {
+			while (arr[i][j] < -std::numeric_limits<float>::max() || arr[i][j] > std::numeric_limits<float>::max()) {
 				arr[i][j] = uniform_fun();
 			}
 		}
 		normalize(arr, i);;
 	}
 }
-
-
