@@ -28,15 +28,15 @@ int medrank::runAlgorithm(float* q){
     }
 
     //  初始化B+树
-    BTree* tree;
-	char BTreeFname[50];
+    BTree* tree[50];
+    char BTreeFname[50];
 
     //  第一次查询
     for (int i = 0; i < 50; ++i) {
-		generateFileName(i, BTreeFname);
-		tree = new BTree;
-		tree->init_restore(BTreeFname);
-		tree->searchLowerAndHigher(q[i],
+        generateFileName(i, BTreeFname);
+	    tree[i] = new BTree;
+		tree[i]->init_restore(BTreeFname);
+		tree[i]->searchLowerAndHigher(q[i],
                                    lower[i], lowerIndex[i],
                                    higher[i], higherIndex[i]);
 		printf("search:%d\n", i);
@@ -106,6 +106,11 @@ int medrank::runAlgorithm(float* q){
        delete [] vote;
        vote = nullptr;
    }
+
+    for (int i = 0; i < 50; ++i) {
+        delete tree[i];
+    }
+
 	return resultNode->get_entry_id(resultIndex);
 }
 const char* INDEXPATH = "Btree/";
