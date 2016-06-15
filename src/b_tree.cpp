@@ -321,59 +321,149 @@ void BTree::searchLowerAndHigher(float query,
 							     BLeafNode* & higher, int & higherIndex) {
 	//  You should use init the b+tree before use this method
 	load_root();
-	BNode *searchRoot = root_ptr_;
+	BIndexNode *searchRoot = (BIndexNode*)root_ptr_, *node1;
+    BLeafNode *node2;
 	assert(searchRoot != nullptr);
 	int entries;
-	while (true) {
-		entries = searchRoot->get_num_entries();
-		for (int i = 0; i < entries; ++i) {
-			if ((i == entries - 1) || (query < searchRoot->get_key(i + 1))) {	
-				if (searchRoot->get_level() > 1) {
-					int nextNode = dynamic_cast<BIndexNode*>(searchRoot)->get_son(i);
-					searchRoot = new BIndexNode();
-					searchRoot->init_restore(this, nextNode);
-					break;
-				} else if (searchRoot->get_level() == 1) {
-					int nextNode = dynamic_cast<BIndexNode*>(searchRoot)->get_son(i);
-					if (searchRoot != nullptr) {
-						delete searchRoot;
-						searchRoot = nullptr;
-					}
-					searchRoot = new BLeafNode();
-					searchRoot->init_restore(this, nextNode);
-					break;
-				} else if (searchRoot->get_level() == 0) {
-					BLeafNode *high = dynamic_cast<BLeafNode*>(searchRoot);
-					BLeafNode *low = high->get_left_sibling();
-					higherIndex = 0;
-					if (low == nullptr)	{
-						lowerIndex = -1;
-					} else {
-						bool found = false;
-						for (higherIndex = 1; higherIndex < low->get_num_entries(); ++higherIndex) {
-							if (low->get_key(higherIndex) >= query) {
-								found = true;
-								high = low;
-								lowerIndex = higherIndex - 1;
-								break;
-							}
-						}
-						if (!found) {
-							higherIndex = 0;
-							if (low == nullptr) {
-								lowerIndex = -1;
-							} else {
-								lowerIndex = low->get_entry_size() - 1;
-							}
-						}
-					}
-					//delete searchRoot;
-					//searchRoot = nullptr;
-					higher = high;
-					lower = low;
-					return;
-				}
-			}
-		}
-	}
-} 
+    /* Stage 1 */
+    entries = searchRoot->get_num_entries();
+    int pos;
+    for (pos = 0; pos < entries; ++pos) {
+        if ((pos == entries - 1) || (query < searchRoot->get_key(pos + 1))) {
+            break;
+        }
+    }
+    node1 = new BIndexNode();
+    node1->init_restore(this, searchRoot->get_son(pos));
+    /* Stage 2 */
+    //bool found = false;
+    entries = node1->get_num_entries();
+    for (pos = 0; pos < entries; ++pos) {
+        if ((pos == entries - 1) || (query < node1->get_key(pos + 1))) {
+            
+            //found = true;
+            break;
+        }
+    }
+    node2 = new BLeafNode();
+    node2->init_restore(this, node1->get_son(pos));
+    if (node1 != nullptr) {
+        delete node1;
+        node1 = nullptr;
+    }
+    /* Stage 3 */
+    BLeafNode *high = node2, *low = high->get_left_sibling(), *next = high->get_right_sibling();
+    entries = node2->get_num_entries();
+    if (low == nullptr && query < high->get_key(0)) {
+        higherIndex = 0;
+        lowerIndex = -1;
+        higher = high;
+        lower = low;
+    } else if (next == nullptr && query >= high->get_key(entries - 1)) {
+        higherIndex = -1;
+        lowerIndex = entries - 1;
+        higher = next;
+        lower = high;
+    } else {
+        for (int i = 0; i < entries; ++i) {
+            if (node2->get_key(i) > query) {
+                // find the first entry whose vi > query
+                higherIndex = i;
+                break;
+            }
+            if (i == entries - 1) {
+                // no found
+                higherIndex = 0;
+                lowerIndex = i;
+                lower = node2;
+                higher = lower->get_right_sibling(); 
+                return;
+            }
+        }
+
+        if (higherIndex == 0) {
+            //  cross nodes  
+            higher = node2;
+            lower = higher->get_left_sibling();
+            lowerIndex = lower->get_num_entries() - 1;
+        } else {
+            //  no cross happen
+            lower = higher = node2;
+            lowerIndex = higherIndex - 1;
+        }
+
+
+        // bool found1 = false;
+        // entries = low->get_num_entries();
+        // for (higherIndex = 0; higherIndex < entries; ++higherIndex) {
+        //     if (low->get_key(higherIndex) >= query) {
+        //         found1 = true;
+        //         break;
+        //     }
+        // }
+        // if (!found) {
+        //     higherIndex = 0;
+        //     higher = high;
+        //     lower = low;
+        //     lowerIndex = low->get_entry_size() - 1;
+        // } else {
+        //     higher = lower = low;
+        //     lowerIndex = higherIndex - 1;
+        // }
+    }
+}
+
+
+// 	while (true) {
+// 		entries = searchRoot->get_num_entries();
+// 		for (int i = 0; i < entries; ++i) {
+// 			if ((i == entries - 1) || (query < searchRoot->get_key(i + 1))) {	
+// 				if (searchRoot->get_level() > 1) {
+// 					int nextNode = dynamic_cast<BIndexNode*>(searchRoot)->get_son(i);
+// 					searchRoot = new BIndexNode();
+// 					searchRoot->init_restore(this, nextNode);
+// 					break;
+// 				} else if (searchRoot->get_level() == 1) {
+// 					int nextNode = dynamic_cast<BIndexNode*>(searchRoot)->get_son(i);
+// 					if (searchRoot != nullptr) {
+// 						delete searchRoot;
+// 						searchRoot = nullptr;
+// 					}
+// 					searchRoot = new BLeafNode();
+// 					searchRoot->init_restore(this, nextNode);
+// 					break;
+// 				} else if (searchRoot->get_level() == 0) {
+// 					BLeafNode *high = dynamic_cast<BLeafNode*>(searchRoot);
+// 					BLeafNode *low = high->get_left_sibling();
+// 					higherIndex = 0;
+// 					if (low == nullptr)	{
+// 						lowerIndex = -1;
+// 					} else {
+// 						bool found = false;
+// 						for (higherIndex = 1; higherIndex < low->get_num_entries(); ++higherIndex) {
+// 							if (low->get_key(higherIndex) >= query) {
+// 								found = true;
+// 								high = low;
+// 								lowerIndex = higherIndex - 1;
+// 								break;
+// 							}
+// 						}
+// 						if (!found) {
+// 							higherIndex = 0;
+// 							if (low == nullptr) {
+// 								lowerIndex = -1;
+// 							} else {
+// 								lowerIndex = low->get_entry_size() - 1;
+// 							}
+// 						}
+// 					}
+// 					//delete searchRoot;
+// 					//searchRoot = nullptr;
+// 					higher = high;
+// 					lower = low;
+// 					return;
+// 				}
+// 			}
+// 		}
+// 	}
+// } 

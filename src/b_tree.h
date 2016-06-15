@@ -40,6 +40,7 @@ public:
 						 	  BLeafNode* & lower, int & lowerIndex,
 						      BLeafNode* & higher, int & higherIndex);  
 
+	void load_root();				// load root of b-tree
 private:
 	// -------------------------------------------------------------------------
 	int read_header(				// read <root> from buffer
@@ -49,7 +50,6 @@ private:
 		char* buf) const;						// the buffer (return)
 
 	// -------------------------------------------------------------------------
-	void load_root();				// load root of b-tree
 
 	void delete_root();				// delete root of b-tree
 };

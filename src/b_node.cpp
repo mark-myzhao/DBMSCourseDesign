@@ -494,19 +494,19 @@ void BLeafNode::init(				// init a new node, which not exist
 	// -------------------------------------------------------------------------
 	int key_size = get_key_size(b_length);
 	// init <key>
-	key_ = new float[capacity_keys_];
-	for (int i = 0; i < capacity_keys_; i++) {
+    // calc header size
+    int header_size = get_header_size();
+    // calc entry size
+    int entry_size = get_entry_size();
+    // init <capacity>
+    capacity_ = (b_length - header_size) / entry_size;
+    if (capacity_ < 100) {          // at least 100 entries
+        printf("capacity = %d\n", capacity_);
+        error("BLeafNode::init capacity too small.\n", true);
+    }
+	key_ = new float[capacity_];
+	for (int i = 0; i < capacity_; i++) {
 		key_[i] = MINREAL;
-	}
-	// calc header size
-	int header_size = get_header_size();
-	// calc entry size
-	int entry_size = get_entry_size();
-	// init <capacity>
-	capacity_ = (b_length - header_size - key_size) / entry_size;
-	if (capacity_ < 100) {			// at least 100 entries
-		printf("capacity = %d\n", capacity_);
-		error("BLeafNode::init capacity too small.\n", true);
 	}
 	id_ = new int[capacity_];		// init <id>
 	for (int i = 0; i < capacity_; i++) {
@@ -535,19 +535,19 @@ void BLeafNode::init_restore(		// load an exist node from disk to init
 	// -------------------------------------------------------------------------
 	int key_size = get_key_size(b_length);
 	// init <key>
-	key_ = new float[capacity_keys_];
-	for (int i = 0; i < capacity_keys_; i++) {
+    // calc header size
+    int header_size = get_header_size();
+    // calc entry size
+    int entry_size = get_entry_size();
+    // init <capacity>
+    capacity_ = (b_length - header_size) / entry_size;
+    if (capacity_ < 100) {          // at least 100 entries
+        printf("capacity = %d\n", capacity_);
+        error("BLeafNode::init_store capacity too small.\n", true);
+    }
+	key_ = new float[capacity_];
+	for (int i = 0; i < capacity_; i++) {
 		key_[i] = MINREAL;
-	}
-	// calc header size
-	int header_size = get_header_size();
-	// calc entry size
-	int entry_size = get_entry_size();
-	// init <capacity>
-	capacity_ = (b_length - header_size - key_size) / entry_size;
-	if (capacity_ < 100) {			// at least 100 entries
-		printf("capacity = %d\n", capacity_);
-		error("BLeafNode::init_store capacity too small.\n", true);
 	}
 	id_ = new int[capacity_];		// init <id>
 	for (int i = 0; i < capacity_; i++) {
@@ -562,13 +562,14 @@ void BLeafNode::init_restore(		// load an exist node from disk to init
 	btree_->file_->read_block(blk, block);
 	read_from_buffer(blk);
 
-	delete[] blk; blk = NULL;
+	delete[] blk; 
+    blk = NULL;
 }
 
 // -----------------------------------------------------------------------------
 int BLeafNode::get_entry_size()		// get entry size in b-node
 {
-	return SIZEINT;						// <id>: sizeof(int)
+	return SIZEINT + SIZEFLOAT;						// <id>: sizeof(int)
 }
 
 // -----------------------------------------------------------------------------
@@ -594,10 +595,10 @@ void BLeafNode::read_from_buffer(	// read a b-node from buffer
 	// -------------------------------------------------------------------------
 	//  Read keys: <num_keys_> and <key_>
 	// -------------------------------------------------------------------------
-	memcpy(&num_keys_, &buf[i], SIZEINT);
-	i += SIZEINT;
+	// memcpy(&num_keys_, &buf[i], SIZEINT);
+	// i += SIZEINT;
 
-	for (int j = 0; j < capacity_keys_; j++) {
+	for (int j = 0; j < num_entries_; j++) {
 		memcpy(&key_[j], &buf[i], SIZEFLOAT);
 		i += SIZEFLOAT;
 	}
@@ -634,10 +635,10 @@ void BLeafNode::write_to_buffer(	// write a b-node into buffer
 	// -------------------------------------------------------------------------
 	//  Write keys: <num_keys_> and <key_>
 	// -------------------------------------------------------------------------
-	memcpy(&buf[i], &num_keys_, SIZEINT);
-	i += SIZEINT;
+	// memcpy(&buf[i], &num_keys_, SIZEINT);
+	// i += SIZEINT;
 
-	for (int j = 0; j < capacity_keys_; j++) {
+	for (int j = 0; j < num_entries_; j++) {
 		memcpy(&buf[i], &key_[j], SIZEFLOAT);
 		i += SIZEFLOAT;
 	}
@@ -750,17 +751,19 @@ void BLeafNode::add_new_child(		// add new child by input id and key
 	if (num_entries_ >= capacity_) {
 		error("BLeafNode::add_new_child entry overflow", true);
 	}
+    id_[num_entries_] = id;         // add new id into its pos
+    key_[num_entries_] = key;
+    
+	//id_[num_entries_] = 111;			// add new id into its pos
+    //key_[num_entries_] = 222;
+	// if ((num_entries_ * SIZEINT) % INDEX_SIZE_LEAF_NODE == 0) {
+	// 	if (num_keys_ >= capacity_keys_) {
+	// 		error("BLeafNode::add_new_child key overflow", true);
+	// 	}
 
-	id_[num_entries_] = id;			// add new id into its pos
-
-	if ((num_entries_ * SIZEINT) % INDEX_SIZE_LEAF_NODE == 0) {
-		if (num_keys_ >= capacity_keys_) {
-			error("BLeafNode::add_new_child key overflow", true);
-		}
-
-		key_[num_keys_] = key;		// add new key into its pos
-		num_keys_++;				// update <num_keys>
-	}
+	// 	key_[num_keys_] = key;		// add new key into its pos
+	// 	num_keys_++;				// update <num_keys>
+	// }
 
 	num_entries_++;					// update <num_entries>
 	dirty_ = true;					// node modified, <dirty> is true

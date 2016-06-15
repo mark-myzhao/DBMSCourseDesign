@@ -1,4 +1,4 @@
-#pragma warning(disable:4996)
+//  #pragma warning(disable:4996)
 #include "LItem.h"
 #include <cstdio>
 #include <cstdlib>
@@ -14,7 +14,7 @@ extern void createVectors(float a[][784]);
 
 // compare function for function sort.
 int cmp(const void* a, const void* b) {
-  float result = ((LItem*)a)->getValue() - ((LItem*)b)->getValue();
+  int result = ((LItem*)a)->getValue() - ((LItem*)b)->getValue();
   return result < 0 ? -1 : 1;
 }
 
@@ -57,7 +57,7 @@ void generate() {
     fclose(ifile);
     fclose(ifile2);
     // sort in memory.
-    for (int i = 0; i < 50; i++) {
+	for (int i = 0; i < 50; i++) {
 		qsort(Litems[i], 60000, sizeof(Litems[i][0]), cmp);
     }
 }

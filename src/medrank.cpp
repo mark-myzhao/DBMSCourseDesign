@@ -40,6 +40,22 @@ int medrank::runAlgorithm(float* q){
                                    lower[i], lowerIndex[i],
                                    higher[i], higherIndex[i]);
 		printf("search:%d\n", i);
+        if (lower[i] && higher[i]) {
+            printf("query: %.4f; lowerKey: %.4f; higherKey %.4f\n", q[i], lower[i]->get_key(lowerIndex[i]), higher[i]->get_key(higherIndex[i]));
+            printf("Index: %d %d\n", lowerIndex[i], higherIndex[i]);
+            printf("Blocks: %d %d\n", lower[i]->get_block(), higher[i]->get_block());
+        }
+
+        // printf("----------\nprint tree\n");
+        // BLeafNode* look = new BLeafNode();
+        // look->init_restore(tree[i], 1);
+        // while (look->get_right_sibling() != nullptr) {
+        //     for (int k = 0; k < look->get_num_entries(); ++k) {
+        //         printf("(%d, %.4f) ", look->get_entry_id(k), look->get_key(k));
+        //     }
+        //     look = look->get_right_sibling();
+        // }
+        // printf("print tree end\n----------\n");
     }
 
     //  投票过程
@@ -102,18 +118,19 @@ int medrank::runAlgorithm(float* q){
         }
     }
 
-   if (vote != nullptr) {          //  释放内存空间
+    int returnResult = resultNode->get_entry_id(resultIndex);
+
+    if (vote != nullptr) {          //  释放内存空间
        delete [] vote;
        vote = nullptr;
-   }
+    }
 
     for (int i = 0; i < 50; ++i) {
         delete tree[i];
     }
 
-	return resultNode->get_entry_id(resultIndex);
+	return returnResult;
 }
-const char* INDEXPATH = "Btree/";
 void medrank::generateFileName(int id, char* fileName) {
     sprintf(fileName, "./%d.medrank", id);
 }
