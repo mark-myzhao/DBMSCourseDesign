@@ -6,6 +6,12 @@
 #include <ctime>
 #include <limits>
 
+extern int nSize;  // 60000
+extern int dSize;  // 784
+extern int queryNum;  // 100
+extern char datasetPath[50];
+extern char queryPath[50];
+
 extern int a[60000][784];
 extern LItem Litems[50][60000];
 extern float q[100][50];
@@ -19,22 +25,21 @@ int cmp(const void* a, const void* b) {
 }
 
 void generate() {
-    FILE *ifile = fopen("./data/Mnist.ds", "r");
-    FILE *ifile2 = fopen("./data/Mnist.q", "r");
+    FILE *ifile = fopen(datasetPath, "r");
+    FILE *ifile2 = fopen(queryPath, "r");
     float result[50];               // temp result after projecting
     int id;                         // the id of the vector and it would not be used
     float randomVectors[50][784];
 
     createVectors(randomVectors);
     //each time we read a vector and project it on 50 random vectors
-    for (int i = 0; i < 60000; i++) {
+    printf("projecting...\n");
+    for (int i = 0; i < nSize; i++) {
         fscanf(ifile, "%d", &id);
-		if (i % 1000 == 0)
-			printf("projecting:%d\n", i);
 		for(int j = 0; j < 50; j++) {
             result[j] = 0;
         }
-        for(int j = 0; j  < 784; j++) {
+        for(int j = 0; j  < dSize; j++) {
             fscanf(ifile, "%d", &a[i][j]);
             for(int k = 0; k < 50; k++) { 
                 result[k] += a[i][j] * randomVectors[k][j];
@@ -44,9 +49,9 @@ void generate() {
             Litems[j][i].set(id, result[j]);
         }
     }
-	for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < queryNum; i++) {
 		fscanf(ifile2, "%d", &id);
-		for (int j = 0; j < 784; j++) {
+		for (int j = 0; j < dSize; j++) {
 			fscanf(ifile2, "%d", &queries[i][j]);
 			for (int k = 0; k < 50; k++) {
 				// q[i]在a[k]上的投影
@@ -54,11 +59,12 @@ void generate() {
 			}
 		}
 	}
+	printf("projected!\n");
     fclose(ifile);
     fclose(ifile2);
     // sort in memory.
 	for (int i = 0; i < 50; i++) {
-		qsort(Litems[i], 60000, sizeof(Litems[i][0]), cmp);
+		qsort(Litems[i], nSize, sizeof(Litems[i][0]), cmp);
     }
 }
 
@@ -77,11 +83,11 @@ float uniform_fun() {
 
 void normalize(float arr[][784], int n) {
 	double length = 0;
-	for (int i = 0; i < 784; ++i) {
+	for (int i = 0; i < dSize; ++i) {
 		length += pow(arr[n][i], 2);
 	}
 	length = sqrt(length);
-	for (int i = 0; i < 784; ++i) {
+	for (int i = 0; i < dSize; ++i) {
 		arr[n][i] /= length;
 	}
 }
@@ -89,7 +95,7 @@ void normalize(float arr[][784], int n) {
 void createVectors(float arr[][784]) {
 	srand(static_cast<unsigned>(time(nullptr)));
 	for (int i = 0; i < 50; i++) {
-		for (int j = 0; j < 784; j++) {
+		for (int j = 0; j < dSize; j++) {
 			arr[i][j] = uniform_fun();
 			while (arr[i][j] < -std::numeric_limits<float>::max() || arr[i][j] > std::numeric_limits<float>::max()) {
 				arr[i][j] = uniform_fun();

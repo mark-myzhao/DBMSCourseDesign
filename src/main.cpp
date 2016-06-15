@@ -9,91 +9,133 @@
 #include <math.h>
 #include <time.h>
 #include <stdlib.h>
+#include <string.h>
 
 float result[100];
 
 class Litem;
 
+// int **a;
 int a[60000][784];
 LItem Litems[50][60000];
 float q[100][50];
 int queries[100][784];
+
+//  main Args
+int nSize = 0;  // 60000
+int dSize = 0;  // 784
+int queryNum = 0;  // 100
+char datasetPath[50];
+char queryPath[50];
+
+int stringToInt(char* str) {
+    int result = 0;
+    for (unsigned i = 0; i < strlen(str); ++i) {
+        result *= 10;
+        result += (str[i] - '0');
+    }
+    return result;
+}
+
 void generate();
 
-// void parseArgs(int argc, char** argv);
+void parseArgs(int argc, char** argv);
+
+// void createArray() {
+//     a = new int*[dSize];
+//     for (int i = 0; i < dSize; ++i)
+//         a[i] = new int[nSize];
+// }
+// void deleteArray() {
+//     for (int i = 0; i < dSize; ++i)
+//         delete[] a[i];
+//     delete[] a;
+// }
 
 int main(int argc, char** argv) {
-    //  Test Parse
-    // printf("Test ParseArgs\n");
-    // parseArgs(argc, argv);
-    //  int dataSize = -1;
-
+    time_t beginTime = clock(), endTime, startTime, finishTime, totalTime = 0;
+    parseArgs(argc, argv);
+    // createArray();
     BTree* tree;
     medrank solution;
     generate();
-    printf("generated!");
+    printf("generated!\n");
     char fileName[50];
-    int ans[100];
+    int ans[queryNum];
+    
+    startTime = clock();
     for (int i = 0; i < 50; ++i) {
         solution.generateFileName(i, fileName);
 	    tree = new BTree;
         tree->init(fileName, BLOCKLENGTH);
-        tree->bulkload(Litems[i], 60000);
-        printf("bulkload finish:%d\n", i);
+        tree->bulkload(Litems[i], nSize);       
 	    delete tree;
-
-        // printf("----------\nprint tree\n");
-        // tree = new BTree;
-        // tree->init_restore(fileName);
-        // BLeafNode* look = new BLeafNode;
-        // look->init_restore(tree, 1);
-        // // while (look->get_right_sibling() != nullptr) {
-        //     for (int k = 0; k < 50; ++k) {
-        //         printf("(%d, %.4f) ", look->get_entry_id(k), look->get_key(k));
-        //     }
-        //     //look = look->get_right_sibling();
-        // // }
-        // printf("print tree end\n----------\n");
-        // getchar();
     }
-
+    finishTime = clock();
+    printf("bulkload finished!\n");
+    printf("Indexing Time: %.4fs\n", (float)(finishTime - startTime) / CLOCKS_PER_SEC);
     FILE* absFileRead = fopen("./data/nearest.txt", "r");
     float resultRatio = 0;
-    for (int i = 0; i < 100; ++i) {
-		printf("run start:%d\n", i);
-        ans[i] = solution.runAlgorithm(q[i]) - 1;
-        // ans[i] = rand() % 60000;
-        for (int j = 0; j < 784; ++j) {
+    for (int i = 0; i < queryNum; ++i) {
+		// printf("run start:%d\n", i);
+        startTime = clock();
+        ans[i] = solution.runAlgorithm(q[i]);
+        finishTime = clock();
+        totalTime += finishTime - startTime;
+        for (int j = 0; j < dSize; ++j) {
             result[i] += pow((queries[i][j] - a[ans[i]][j]),2);
         }
 
         result[i] = sqrt(result[i]);
         float tmp = 0;
         fscanf(absFileRead, "%f", &tmp);
-        printf("Medrank Result: %f, real: %f\n", result[i], tmp);
+        // printf("Medrank Result: %f, cloest: %f\n", result[i], tmp);
         resultRatio += (result[i] / tmp); 
     }
-
-    resultRatio /= 100;
-    printf("------Aver Ratio: %f\n------\n", resultRatio);
-
+    printf("Average Running Time: %.4fs\n", (float)totalTime / queryNum / CLOCKS_PER_SEC);
+    resultRatio /= queryNum;
+    printf("------Overall Ratio: %f------\n", resultRatio);
+    // deleteArray();
+    endTime = clock();
+    // printf("Average Running Time: %dms\n", finishTime - startTime);
     return 0;
 }
 
 
-// void parseArgs(int argc, char** argv) {
-//    int opt;  
-//    int digit_optind = 0;  
-//    int option_index = 0;  
-//    char *optstring = "n:d:";  
-//    static struct option long_options[] = {
-//        {"qn", required_argument, NULL, '1'},  
-//        {"ds", required_argument, NULL, '2'},  
-//        {"qs", required_argument, NULL, '3'},  
-//        {0, 0, 0, 0}  
-//    };  
+void parseArgs(int argc, char** argv) {
+    int opt;  
+    int digit_optind = 0;  
+    int option_index = 0;  
+    char *optstring = "n:d:";  
+    static struct option long_options[] = {
+        {"qn", required_argument, NULL, '1'},  
+        {"ds", required_argument, NULL, '2'},  
+        {"qs", required_argument, NULL, '3'},  
+        {0, 0, 0, 0}  
+    };  
  
-//    while ( (opt = getopt_long_only(argc, argv, optstring, long_options, &option_index)) != -1) {  
-//        printf("optarg = %s\n", (char*) optarg);  
-//    }  
-// }
+   while ( (opt = getopt_long_only(argc, argv, optstring, long_options, &option_index)) != -1) {  
+        //printf("%c\n", opt);
+        if (opt == 'n') {
+            nSize = stringToInt((char*) optarg);
+            // printf("%d\n", nSize);
+        } else if (opt == 'd') {
+            dSize = stringToInt((char*) optarg);
+            // printf("%d\n", dSize);
+        } else if (opt == '1') {
+            queryNum = stringToInt((char*) optarg);
+            // printf("%d\n", queryNum);
+        } else if (opt == '2') {
+            strcpy(datasetPath, (char*) optarg);
+            // printf("%s\n", datasetPath);
+        } else if (opt == '3') {
+            strcpy(queryPath, (char*) optarg);
+            // printf("%s\n", queryPath);
+        } else {
+            // do nothing
+        }
+    //printf("optarg = %s\n", (char*) optarg);  
+    }  
+    // getchar();
+}
+

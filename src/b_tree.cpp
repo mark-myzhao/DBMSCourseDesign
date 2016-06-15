@@ -1,4 +1,3 @@
-#pragma warning(disable:4996)
 #include "b_node.h"
 #include "b_tree.h"
 #include "block_file.h"
@@ -391,79 +390,7 @@ void BTree::searchLowerAndHigher(float query,
             lower = higher = node2;
             lowerIndex = higherIndex - 1;
         }
-
-
-        // bool found1 = false;
-        // entries = low->get_num_entries();
-        // for (higherIndex = 0; higherIndex < entries; ++higherIndex) {
-        //     if (low->get_key(higherIndex) >= query) {
-        //         found1 = true;
-        //         break;
-        //     }
-        // }
-        // if (!found) {
-        //     higherIndex = 0;
-        //     higher = high;
-        //     lower = low;
-        //     lowerIndex = low->get_entry_size() - 1;
-        // } else {
-        //     higher = lower = low;
-        //     lowerIndex = higherIndex - 1;
-        // }
     }
 }
 
 
-// 	while (true) {
-// 		entries = searchRoot->get_num_entries();
-// 		for (int i = 0; i < entries; ++i) {
-// 			if ((i == entries - 1) || (query < searchRoot->get_key(i + 1))) {	
-// 				if (searchRoot->get_level() > 1) {
-// 					int nextNode = dynamic_cast<BIndexNode*>(searchRoot)->get_son(i);
-// 					searchRoot = new BIndexNode();
-// 					searchRoot->init_restore(this, nextNode);
-// 					break;
-// 				} else if (searchRoot->get_level() == 1) {
-// 					int nextNode = dynamic_cast<BIndexNode*>(searchRoot)->get_son(i);
-// 					if (searchRoot != nullptr) {
-// 						delete searchRoot;
-// 						searchRoot = nullptr;
-// 					}
-// 					searchRoot = new BLeafNode();
-// 					searchRoot->init_restore(this, nextNode);
-// 					break;
-// 				} else if (searchRoot->get_level() == 0) {
-// 					BLeafNode *high = dynamic_cast<BLeafNode*>(searchRoot);
-// 					BLeafNode *low = high->get_left_sibling();
-// 					higherIndex = 0;
-// 					if (low == nullptr)	{
-// 						lowerIndex = -1;
-// 					} else {
-// 						bool found = false;
-// 						for (higherIndex = 1; higherIndex < low->get_num_entries(); ++higherIndex) {
-// 							if (low->get_key(higherIndex) >= query) {
-// 								found = true;
-// 								high = low;
-// 								lowerIndex = higherIndex - 1;
-// 								break;
-// 							}
-// 						}
-// 						if (!found) {
-// 							higherIndex = 0;
-// 							if (low == nullptr) {
-// 								lowerIndex = -1;
-// 							} else {
-// 								lowerIndex = low->get_entry_size() - 1;
-// 							}
-// 						}
-// 					}
-// 					//delete searchRoot;
-// 					//searchRoot = nullptr;
-// 					higher = high;
-// 					lower = low;
-// 					return;
-// 				}
-// 			}
-// 		}
-// 	}
-// } 

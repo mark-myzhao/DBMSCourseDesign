@@ -1,6 +1,5 @@
 #ifndef _DEF_H_
 #define _DEF_H_
-#pragma warning(disable:4996)
 #include <cstdio>
 #include <cmath>
 #include <cstdlib>
@@ -65,7 +64,6 @@ inline void error(							// display an error message
 {
 	char c;
 	printf("error: %s", msg);
-	//  scanf("%c", &c);
 	if (is_exit) exit(1);
 }
 
